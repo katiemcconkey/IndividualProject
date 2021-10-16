@@ -25,7 +25,18 @@
 ### 1 Oct 2021
 * *5 hours* researching toolkits and downloading and setting up flutter and emulator
 
-## 6 Oct 2021
+## Week 2
+### 6 Oct 2021
 
 * *0.5 hour* meeting with supervisor
 * *4 hours* following flutter tutorials
+
+## Week 3
+
+### 13 Oct 2021
+* *0.5 hour* meeting with supervisor 
+* *2 hours* trying to get current location on map
+* *4.5 hours* researching and trying to implement gps location after finding current latitude and longitude
+
+### 16 Oct 2021
+* *3 hours* implementing wifi_network_plus package to get wifi name and BSSID etc
