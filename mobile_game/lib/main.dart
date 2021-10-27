@@ -3,9 +3,14 @@ import 'package:mobile_game/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'map.dart';
 
-void main() => runApp(
-      const MyApp(),
+
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+       const MyApp(),
     );
+  }
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);

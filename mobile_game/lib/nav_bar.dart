@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'upload_picture.dart';
+import 'screens/camera_screen.dart';
 
 class NavBar extends StatelessWidget {
   const NavBar({Key? key}) : super(key: key);
@@ -16,13 +16,16 @@ class NavBar extends StatelessWidget {
             leading: const Icon(Icons.add_a_photo_outlined),
             title: const Text('Upload Picture'),
             // ignore: avoid_returning_null_for_void
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const pictureApp())),
+            onTap: () => 
+            //Null,
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>  const pictureApp())),
           ),
           ListTile(
             leading: const Icon(Icons.add_location_outlined),
             title: const Text('Find Location'),
             // ignore: avoid_returning_null_for_void
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const pictureApp())),
+            onTap: () => Null,
+            //Navigator.push(context, MaterialPageRoute(builder: (context) =>  const pictureApp())),
           ),
         ],
       ),
