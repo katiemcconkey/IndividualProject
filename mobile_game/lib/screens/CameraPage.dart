@@ -65,7 +65,8 @@ class _CameraPageState extends State<CameraPage> {
         ),
         ),
         if(pictureFile != null)
-          Image.file(File(pictureFile!.path))
+          Image.file(File(pictureFile!.path), height: 300, width: 400,),
+          
       ],
     );
   }
