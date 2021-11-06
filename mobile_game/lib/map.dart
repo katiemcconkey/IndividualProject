@@ -50,7 +50,7 @@ class _mapState extends State<maps> {
           onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(
             target: _center,
-            zoom: 20.0,
+            zoom: 30.0,
           ),
         ),
       ),

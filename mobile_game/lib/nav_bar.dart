@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_game/screens/bssid.dart';
 import 'screens/camera_screen.dart';
+import 'screens/photo_gallery.dart';
 
 class NavBar extends StatelessWidget {
   const NavBar({Key? key}) : super(key: key);
@@ -26,6 +28,15 @@ class NavBar extends StatelessWidget {
             // ignore: avoid_returning_null_for_void
             onTap: () => Null,
             //Navigator.push(context, MaterialPageRoute(builder: (context) =>  const pictureApp())),
+          ),
+          ListTile(
+            leading: const Icon(Icons.burst_mode_outlined),
+            title: const Text('Gallery'),
+            // ignore: avoid_returning_null_for_void
+            onTap: () => 
+            //Null,
+            // Navigator.push(context, MaterialPageRoute(builder: (context) => Gallery())),
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>  const Bssid())),
           ),
         ],
       ),

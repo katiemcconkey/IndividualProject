@@ -9,6 +9,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
        const MyApp(),
+
     );
   }
 
@@ -47,8 +48,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Mobile App'),
           centerTitle: true,
         ),
-      ),
-      
+      ),    
     );
   }
 }
