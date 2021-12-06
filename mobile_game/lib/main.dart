@@ -1,8 +1,6 @@
-import 'package:mobile_game/map.dart';
+
 import 'package:mobile_game/nav_bar.dart';
 import 'package:flutter/material.dart';
-import 'map.dart';
-
 
 
 Future<void> main() async {
@@ -31,9 +29,11 @@ class _MyAppState extends State<MyApp> {
             Builder(builder: (context) =>IconButton(
               icon: const Icon(Icons.map),
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const maps()));
+                Null;
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => const maps()));
               },
             )),
             Builder(builder: (context) =>IconButton(
@@ -48,7 +48,20 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Mobile App'),
           centerTitle: true,
         ),
-      ),    
-    );
+        body: 
+        //Center(
+          Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const <Widget>[
+            Card(
+              child: Padding(padding: EdgeInsets.all(8.0),
+              child: Text(' Welcome Back!', style: TextStyle(fontSize: 32, color: Colors.pink,)),
+              )
+            )
+          ],
+          ) 
+        )
+      ); 
   }
 }
+

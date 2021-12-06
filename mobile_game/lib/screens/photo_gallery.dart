@@ -1,44 +1,48 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'CameraPage.dart';
-import 'dart:io';
-import 'package:mobile_game/map.dart';
-import 'package:mobile_game/nav_bar.dart';
 import 'package:mobile_game/main.dart';
+import '../nav_bar.dart';
 
-class Gallery extends StatelessWidget {
-  final String imagePath;
-  const Gallery({Key? key, required this.imagePath}) : super(key: key);
+
+class Gallery extends StatefulWidget {
+  const Gallery({Key? key}) : super(key: key);
+
+  @override
+  gallery_state createState() => gallery_state();
+}
+
+class gallery_state extends State<Gallery> {
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          Builder(
-              builder: (context) => IconButton(
-                    icon: const Icon(Icons.map),
+        drawer: const NavBar(),
+        appBar: AppBar(
+          actions: [
+            Builder(
+                builder: (context) => IconButton(
+                      icon: const Icon(Icons.map),
+                      onPressed: () {
+                        Null;
+                      },
+                    )),
+            Builder(
+                builder: (context) => IconButton(
                     onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const maps()));
+                              builder: (context) => const MyApp()));
                     },
-                  )),
-          Builder(
-              builder: (context) => IconButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const MyApp()));
-                  },
-                  icon: const Icon(Icons.home)))
-        ],
-        backgroundColor: Colors.purple,
-        title: const Text('Mobile App'),
-        centerTitle: true,
-      ),
-      body: Image.file(File(imagePath)),
-    );
+                    icon: const Icon(Icons.home)))
+          ],
+          backgroundColor: Colors.purple,
+          title: const Text('Mobile App'),
+          centerTitle: true,
+        ),
+        body:  const ElevatedButton(
+          child: Text("click to view uploaded pictures"),
+          onPressed: null
+        ));
   }
 }

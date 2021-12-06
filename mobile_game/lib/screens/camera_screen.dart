@@ -1,16 +1,12 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'CameraPage.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../main.dart';
-import 'CameraPage.dart';
-import '../map.dart';
+//import '../map.dart';
+import '../nav_bar.dart';
 
+// ignore: camel_case_types
 class pictureApp extends StatefulWidget {
   const pictureApp({Key? key}) : super(key: key);
 
@@ -22,16 +18,18 @@ class _PictureState extends State<pictureApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        drawer: const NavBar(),
         appBar: AppBar(
           actions: [
             Builder(
                 builder: (context) => IconButton(
                       icon: const Icon(Icons.map),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const maps()));
+                        Null;
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => const maps()));
                       },
                     )),
             Builder(

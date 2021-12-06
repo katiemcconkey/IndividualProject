@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/bssid.dart';
 import 'screens/camera_screen.dart';
+import 'screens/cameras.dart';
 import 'screens/photo_gallery.dart';
 
 class NavBar extends StatelessWidget {
@@ -13,14 +14,17 @@ class NavBar extends StatelessWidget {
         // Remove padding
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(child: ClipOval(child: Text('NAME'),) ),
+          const DrawerHeader(
+              child: ClipOval(
+            child: Text('NAME'),
+          )),
           ListTile(
             leading: const Icon(Icons.add_a_photo_outlined),
             title: const Text('Upload Picture'),
             // ignore: avoid_returning_null_for_void
-            onTap: () => 
-            //Null,
-            Navigator.push(context, MaterialPageRoute(builder: (context) =>  const pictureApp())),
+            onTap: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const Camera_Screen())),
+               
           ),
           ListTile(
             leading: const Icon(Icons.add_location_outlined),
@@ -33,10 +37,11 @@ class NavBar extends StatelessWidget {
             leading: const Icon(Icons.burst_mode_outlined),
             title: const Text('Gallery'),
             // ignore: avoid_returning_null_for_void
-            onTap: () => 
-            //Null,
-            // Navigator.push(context, MaterialPageRoute(builder: (context) => Gallery())),
-            Navigator.push(context, MaterialPageRoute(builder: (context) =>  const Bssid())),
+            onTap: () =>
+                //Null,
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const Gallery())),
+                //Navigator.push(context,
+                    //MaterialPageRoute(builder: (context) => const Bssid())),
           ),
         ],
       ),

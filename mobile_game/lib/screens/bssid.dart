@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_game/main.dart';
-import 'package:mobile_game/map.dart';
+//import 'package:mobile_game/map.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 import 'package:mobile_game/nav_bar.dart';
 
@@ -36,10 +36,11 @@ class _BssidState extends State<Bssid> {
                 builder: (context) => IconButton(
                       icon: const Icon(Icons.map),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const maps()));
+                        Null;
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => const maps()));
                       },
                     )),
             Builder(
@@ -85,11 +86,11 @@ class _BssidState extends State<Bssid> {
                             _wifiNetworks.length,
                             (index) => Container(
                                 margin:
-                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                    const EdgeInsets.symmetric(vertical: 1.0),
                                 child: ListTile(
                                   leading: Text(
                                       _wifiNetworks[index].bssid.toString() +
-                                          ' ' +
+                                          '--- ' +
                                           _wifiNetworks[index].ssid.toString()
                                           ),
                                 ))),
