@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "670292048176",
+    "firebase_url": "https://locationgame-6d0f7-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "locationgame-6d0f7",
+    "storage_bucket": "locationgame-6d0f7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:670292048176:android:f87ba0aa98ed9d57f7f0f5",
+        "android_client_info": {
+          "package_name": "com.UofG.mobilegame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "670292048176-94or36d4esah4c60m22pc0tng472kkof.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAn2ypbaWTbF54eRGYJIDrzg5ymU26gP2U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "670292048176-94or36d4esah4c60m22pc0tng472kkof.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

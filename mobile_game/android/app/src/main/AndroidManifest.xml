@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.mobile_game">
+    package="com.UofG.mobilegame">
    
     <uses-permission android:name="android.permission.ACCESS_COURSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

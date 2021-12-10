@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/bssid.dart';
-import 'screens/camera_screen.dart';
 import 'screens/cameras.dart';
 import 'screens/photo_gallery.dart';
 
