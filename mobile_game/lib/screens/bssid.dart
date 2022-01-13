@@ -24,6 +24,7 @@ class _BssidState extends State<Bssid> {
     return Future.value(_wifiNetworks);
   }
 
+  signalcheck(List<WifiNetwork> _wifiNetworks) async {}
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +70,12 @@ class _BssidState extends State<Bssid> {
                 margin: const EdgeInsets.symmetric(vertical: 20.0),
                 child: ElevatedButton(
                     style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.deepPurple)),
-                    onPressed: () => getListOfWifis(),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.deepPurple)),
+                    onPressed: () => {
+                          getListOfWifis(),
+                          signalcheck(_wifiNetworks),
+                        },
                     child: const Text('Scan for Networks')),
               ),
               _wifiNetworks.isNotEmpty
@@ -88,12 +92,15 @@ class _BssidState extends State<Bssid> {
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 1.0),
                                 child: ListTile(
-                                  leading: Text(
-                                      _wifiNetworks[index].bssid.toString() +
-                                          '--- ' +
-                                          _wifiNetworks[index].ssid.toString()
-                                          ),
-                                ))),
+                                    leading: Text(_wifiNetworks[index]
+                                            .bssid
+                                            .toString() +
+                                        '--- ' +
+                                        _wifiNetworks[index].ssid.toString() +
+                                        '--- ' +
+                                        _wifiNetworks[index].level.toString()),
+                                    trailing: Text(
+                                        _wifiNetworks.length.toString())))),
                       ))
                   : Container()
             ],

@@ -1,6 +1,5 @@
 // ignore_for_file: camel_case_types
 
-import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -8,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_game/nav_bar.dart';
 import 'package:mobile_game/main.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
 import 'package:wifi_iot/wifi_iot.dart';
@@ -32,19 +30,31 @@ class _camera_screenState extends State<Camera_Screen> {
   late String name;
   static List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
   final db = FirebaseDatabase.instance;
-  final id = "ID";
-  late String picture;
+  late String wifi = " ";
+
   static Future<List<WifiNetwork>> getListOfWifis() async {
     try {
       _wifiNetworks = await WiFiForIoTPlugin.loadWifiList();
     } on PlatformException {
       _wifiNetworks = <WifiNetwork>[];
     }
+    print(_wifiNetworks);
     return Future.value(_wifiNetworks);
+  }
+
+  String wifis(List<WifiNetwork> _wifiNetworks) {
+    wifi.replaceAll(" ", "");
+    for (var b in _wifiNetworks) {
+      if (b.level! > -80) {
+        wifi = (wifi + b.bssid.toString() + ",");
+      }
+    }
+    return wifi;
   }
 
   _getCamera() async {
     getListOfWifis();
+    wifis(_wifiNetworks);
     XFile? image =
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
@@ -52,7 +62,7 @@ class _camera_screenState extends State<Camera_Screen> {
       imgs.add(Image.file(imageFile));
       name = path.basename(image.path);
     });
-    final img = photo(name);
+    final img = photo(name, wifi);
     pic.saveData(img);
     try {
       await storage.ref(name).putFile(
@@ -60,13 +70,13 @@ class _camera_screenState extends State<Camera_Screen> {
           );
       setState(() {});
     } on FirebaseException catch (error) {
+      // ignore: avoid_print
       print(error);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final ref = FirebaseDatabase.instance.reference();
     return MaterialApp(
         home: Scaffold(
       drawer: const NavBar(),

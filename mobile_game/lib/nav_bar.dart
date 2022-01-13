@@ -29,8 +29,9 @@ class NavBar extends StatelessWidget {
             leading: const Icon(Icons.add_location_outlined),
             title: const Text('Find Location'),
             // ignore: avoid_returning_null_for_void
-            onTap: () => Null,
-            //Navigator.push(context, MaterialPageRoute(builder: (context) =>  const pictureApp())),
+            onTap: () => 
+            //Null,
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>  const Bssid())),
           ),
           ListTile(
             leading: const Icon(Icons.burst_mode_outlined),

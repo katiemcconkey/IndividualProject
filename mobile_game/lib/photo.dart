@@ -2,11 +2,13 @@
 
 class photo {
   String name;
-  //List<String>  wifi;
-  photo(this.name);
+  String wifi;
+  photo(this.name, this.wifi);
 
-  photo.fromJson(Map<dynamic, dynamic> json) : name = json['name'];
+  photo.fromJson(Map<dynamic, dynamic> json)
+      : name = json['name'],
+        wifi = json['wifi'];
 
   Map<dynamic, dynamic> toJson() =>
-      <dynamic, dynamic>{'name': name};
+      <dynamic, dynamic>{'name': name, 'wifi': wifi};
 }
