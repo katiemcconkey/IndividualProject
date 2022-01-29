@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:mobile_game/dao.dart';
 import 'package:mobile_game/main.dart';
 import 'package:wifi_iot/wifi_iot.dart';
+import '../homepage.dart';
 import '../nav_bar.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class Gallery extends StatefulWidget {
   const Gallery({Key? key}) : super(key: key);
@@ -68,7 +68,6 @@ class gallery_state extends State<Gallery> {
   }
 
   Future<List<Map<String, dynamic>>> _loadImages() async {
-    FirebaseAuth.instance.signInAnonymously();
     List<Map<String, dynamic>> files = [];
 
     final ListResult result = await storage.ref().list();

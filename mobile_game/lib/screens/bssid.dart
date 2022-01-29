@@ -5,6 +5,8 @@ import 'package:mobile_game/main.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 import 'package:mobile_game/nav_bar.dart';
 
+import '../homepage.dart';
+
 class Bssid extends StatefulWidget {
   const Bssid({Key? key}) : super(key: key);
 

@@ -11,8 +11,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
 import 'package:wifi_iot/wifi_iot.dart';
 import 'package:firebase_database/firebase_database.dart';
+import '../homepage.dart';
 import '../photo.dart';
 import '../dao.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Camera_Screen extends StatefulWidget {
   const Camera_Screen({Key? key}) : super(key: key);
@@ -30,7 +32,13 @@ class _camera_screenState extends State<Camera_Screen> {
   late String name;
   static List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
   final db = FirebaseDatabase.instance;
-  late String wifi = " ";
+  late String wifi = ' ';
+  late String id;
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  void inputData() {
+    id = auth.currentUser!.uid;
+  }
 
   static Future<List<WifiNetwork>> getListOfWifis() async {
     try {
@@ -38,12 +46,11 @@ class _camera_screenState extends State<Camera_Screen> {
     } on PlatformException {
       _wifiNetworks = <WifiNetwork>[];
     }
-    print(_wifiNetworks);
     return Future.value(_wifiNetworks);
   }
 
   String wifis(List<WifiNetwork> _wifiNetworks) {
-    wifi.replaceAll(" ", "");
+    wifi.replaceAll(' ', '');
     for (var b in _wifiNetworks) {
       if (b.level! > -80) {
         wifi = (wifi + b.bssid.toString() + ",");
@@ -55,6 +62,7 @@ class _camera_screenState extends State<Camera_Screen> {
   _getCamera() async {
     getListOfWifis();
     wifis(_wifiNetworks);
+    inputData();
     XFile? image =
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
@@ -62,11 +70,14 @@ class _camera_screenState extends State<Camera_Screen> {
       imgs.add(Image.file(imageFile));
       name = path.basename(image.path);
     });
-    final img = photo(name, wifi);
+    final img = photo(name, wifi, id);
     pic.saveData(img);
     try {
       await storage.ref(name).putFile(
             imageFile,
+            SettableMetadata(customMetadata: {
+              'uid' : id
+            })
           );
       setState(() {});
     } on FirebaseException catch (error) {
