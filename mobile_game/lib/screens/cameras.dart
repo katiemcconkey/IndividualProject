@@ -32,8 +32,11 @@ class _camera_screenState extends State<Camera_Screen> {
   late String name;
   static List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
   final db = FirebaseDatabase.instance;
-  late String wifi = ' ';
+  late String wifi = '';
   late String id;
+  int i = 0;
+  int counter = 0;
+  late String data;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   void inputData() {
@@ -59,6 +62,43 @@ class _camera_screenState extends State<Camera_Screen> {
     return wifi;
   }
 
+  printAlert(String Message) {
+    showDialog(
+        context: context,
+        builder: (ctx) =>
+            AlertDialog(title: const Text("Error"), content: Text(Message)));
+  }
+
+  updateCounter() async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref("data");
+    DatabaseEvent event = await ref.once();
+    dynamic values = event.snapshot.value;
+    values.forEach((key, values) {
+      if (values["uid"] == id) {
+        int x = values["counter"];
+        ref.child(key).update({"counter": x + 1});
+      }
+    });
+  }
+
+  counterLimit() async {
+    inputData();
+    //if counter > 9 then remove camera functionality
+    DatabaseReference ref = FirebaseDatabase.instance.ref("data");
+    DatabaseEvent event = await ref.once();
+    dynamic values = event.snapshot.value;
+    values.forEach((key, values) {
+      if (values["uid"] == id) {
+        int x = values["counter"];
+        if (x < 10) {
+          _getCamera();
+        } else {
+          printAlert("You can only upload 10 images a day");
+        }
+      }
+    });
+  }
+
   _getCamera() async {
     getListOfWifis();
     wifis(_wifiNetworks);
@@ -73,17 +113,16 @@ class _camera_screenState extends State<Camera_Screen> {
     final img = photo(name, wifi, id);
     pic.saveData(img);
     try {
-      await storage.ref(name).putFile(
-            imageFile,
-            SettableMetadata(customMetadata: {
-              'uid' : id
-            })
-          );
+      updateCounter();
+      await storage
+          .ref(name)
+          .putFile(imageFile, SettableMetadata(customMetadata: {'uid': id}));
       setState(() {});
     } on FirebaseException catch (error) {
       // ignore: avoid_print
       print(error);
     }
+    i++;
   }
 
   @override
@@ -120,7 +159,7 @@ class _camera_screenState extends State<Camera_Screen> {
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () async {
-            _getCamera();
+            counterLimit();
           }),
     ));
   }

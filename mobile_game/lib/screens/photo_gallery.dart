@@ -1,11 +1,12 @@
 // ignore_for_file: camel_case_types
 
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_game/dao.dart';
-import 'package:mobile_game/main.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 import '../homepage.dart';
 import '../nav_bar.dart';
@@ -19,6 +20,8 @@ class Gallery extends StatefulWidget {
 }
 
 class gallery_state extends State<Gallery> {
+  int points = 0;
+
   final pic = Dao();
   late int i;
   List<String> wifis = [];
@@ -34,10 +37,17 @@ class gallery_state extends State<Gallery> {
   late List<String> names = [];
   var info = {};
   late PageController _pageController;
+  late String id;
+  List<Map<String, dynamic>> files = [];
 
   Map<String, List<String>> infos = {};
   DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
-  
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  void inputData() {
+    id = auth.currentUser!.uid;
+  }
 
   @override
   void initState() {
@@ -64,21 +74,23 @@ class gallery_state extends State<Gallery> {
       wifis = m.split(",");
       infos[k] = wifis;
     });
-    //});
   }
 
   Future<List<Map<String, dynamic>>> _loadImages() async {
-    List<Map<String, dynamic>> files = [];
+    inputData();
 
     final ListResult result = await storage.ref().list();
     final List<Reference> allFiles = result.items;
 
     await Future.forEach<Reference>(allFiles, (file) async {
       final String fileUrl = await file.getDownloadURL();
-      files.add({
-        "url": fileUrl,
-        "path": file.fullPath,
-      });
+      final FullMetadata custom = await file.getMetadata();
+      if (custom.customMetadata?['uid'] != id) {
+        files.add({
+          "url": fileUrl,
+          "path": file.fullPath,
+        });
+      }
     });
 
     return files;
@@ -94,7 +106,43 @@ class gallery_state extends State<Gallery> {
     return data;
   }
 
-  checkWifi(String name) {
+  updatePoints(int i) async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref("data");
+    DatabaseEvent event = await ref.once();
+    dynamic values = event.snapshot.value;
+    values.forEach((key, values) {
+      if (values["uid"] == id) {
+        int x = values["points"];
+        ref.child(key).update({"points": x + i});
+      }
+    });
+  }
+
+  updateUploadersPoints(int i) async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref("data");
+    DatabaseEvent event = await ref.once();
+    dynamic values = event.snapshot.value;
+    final ListResult result = await storage.ref().list();
+    final List<Reference> allFiles = result.items;
+    await Future.forEach<Reference>(allFiles, (file) async {
+      final FullMetadata custom = await file.getMetadata();
+      values.forEach((key, values) {
+        if (values["uid"] == custom.customMetadata?['uid']) {
+          int x = values["points"];
+          ref.child(key).update({"points": x + i});
+        }
+      });
+    });
+  }
+
+  printAlert(String Message) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+            title: const Text("Location Check"), content: Text(Message)));
+  }
+
+  checkWifi(String name) async {
     check();
     wificheck(_wifiNetworks);
     dynamic n;
@@ -111,26 +159,35 @@ class gallery_state extends State<Gallery> {
         }
       }
     });
-    if (i > (wifis.length * 0.75)) {
-      showDialog(
-          context: context,
-          builder: (ctx) => const AlertDialog(
-              title: Text("Location Check"),
-              content: Text("You are in the right location")));
-    } else {
-      showDialog(
-          context: context,
-          builder: (ctx) => const AlertDialog(
-              title: Text("Location Check"),
-              content: Text("You are in the wrong location")));
-    }
-  }
-
-  printAlert(String name) {
-    showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-            title: const Text("Location Check"), content: Text(name)));
+    final ListResult result = await storage.ref().list();
+    final List<Reference> allFiles = result.items;
+    await Future.forEach<Reference>(allFiles, (file) async {
+      final String fileUrl = await file.getDownloadURL();
+      if (i > (wifis.length * 0.75) && i < (wifis.length * 1.25)) {
+        if (points == 0) {
+          updatePoints(10);
+          updateUploadersPoints(8);
+          printAlert("You got it first try, 10 points added");
+        } else if (points == 1) {
+          updatePoints(5);
+          updateUploadersPoints(4);
+          printAlert("Second try! 5 points added");
+        } else if (points == 2) {
+          updatePoints(2);
+          updateUploadersPoints(2);
+          printAlert("Third try! Well done");
+        }
+      } else {
+        points += 1;
+        if (points > 3) {
+          printAlert("Out of tries");
+          files.remove({
+            "url": fileUrl,
+            "path": file.fullPath,
+          });
+        }
+      }
+    });
   }
 
   @override
@@ -184,10 +241,8 @@ class gallery_state extends State<Gallery> {
                                   return Container(
                                       margin: const EdgeInsets.all(10),
                                       child: GestureDetector(
-                                          onTap: () => {
-                                                //printAlert(image['path'])
-                                                checkWifi(image['path'])
-                                              },
+                                          onTap: () =>
+                                              {checkWifi(image['path'])},
                                           child: Image.network(
                                             image['url'],
                                             scale: 3.0,
@@ -199,8 +254,6 @@ class gallery_state extends State<Gallery> {
                           );
                         })),
               ],
-            ))
-         
-        );
+            )));
   }
 }
