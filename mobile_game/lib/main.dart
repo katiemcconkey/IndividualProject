@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -41,6 +42,8 @@ class _LoginState extends State<Login> {
   String email = '';
   String password = '';
   bool isloading = false;
+  late DateTime x;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,51 +115,49 @@ class _LoginState extends State<Login> {
                             ),
                             const SizedBox(height: 80),
                             ElevatedButton(
-                                child: const Text('Login'),
-                                onPressed: () async {
-                                  if (formkey.currentState!.validate()) {
-                                    setState(() {
-                                      isloading = true;
-                                    });
-                                    try {
-                                      final newUser = await _auth.signInWithEmailAndPassword(
-                                          email: email, password: password);
-                                      //problem
-                                      Navigator.push(
+                              child: const Text('Login'),
+                              onPressed: () async {
+                                if (formkey.currentState!.validate()) {
+                                  setState(() {
+                                    isloading = true;
+                                  });
+                                  try {
+                                    final newUser =
+                                        await _auth.signInWithEmailAndPassword(
+                                            email: email, password: password);
+                                    Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (ctx) => const MyApp(),
                                       ),
                                     );
-                                      setState(() {
-                                        isloading = false;
-                                      });
-                                      
-                                    } on FirebaseAuthException catch (e) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) => AlertDialog(
-                                          title: const Text("Login Failed"),
-                                          content: Text('${e.message}'),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(ctx).pop();
-                                              },
-                                              child: const Text('Okay'),
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                      print(e);
-                                    }
                                     setState(() {
                                       isloading = false;
                                     });
+                                  } on FirebaseAuthException catch (e) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        title: const Text("Login Failed"),
+                                        content: Text('${e.message}'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(ctx).pop();
+                                            },
+                                            child: const Text('Okay'),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                    print(e);
                                   }
-                                },
-                              ),
-                            
+                                  setState(() {
+                                    isloading = false;
+                                  });
+                                }
+                              },
+                            ),
                             const SizedBox(height: 10),
                             GestureDetector(
                               onTap: () {

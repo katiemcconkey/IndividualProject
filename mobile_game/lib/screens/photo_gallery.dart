@@ -39,6 +39,8 @@ class gallery_state extends State<Gallery> {
   late PageController _pageController;
   late String id;
   List<Map<String, dynamic>> files = [];
+  List alreadyGuessed = [];
+  late bool image = false;
 
   Map<String, List<String>> infos = {};
   DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
@@ -79,7 +81,8 @@ class gallery_state extends State<Gallery> {
   Future<List<Map<String, dynamic>>> _loadImages() async {
     inputData();
 
-    final ListResult result = await storage.ref().list();
+    final ListResult result =
+        await storage.ref().list(const ListOptions(maxResults: 10));
     final List<Reference> allFiles = result.items;
 
     await Future.forEach<Reference>(allFiles, (file) async {
@@ -148,6 +151,8 @@ class gallery_state extends State<Gallery> {
     dynamic n;
     dynamic m;
     int i = 0;
+    late String fileUrl;
+    late FullMetadata custom;
     infos.forEach((key, value) {
       if (key == name) {
         for (n in value) {
@@ -159,35 +164,60 @@ class gallery_state extends State<Gallery> {
         }
       }
     });
-    final ListResult result = await storage.ref().list();
+    final ListResult result =
+        await storage.ref().list(const ListOptions(maxResults: 10));
     final List<Reference> allFiles = result.items;
+
     await Future.forEach<Reference>(allFiles, (file) async {
-      final String fileUrl = await file.getDownloadURL();
-      if (i > (wifis.length * 0.75) && i < (wifis.length * 1.25)) {
-        if (points == 0) {
-          updatePoints(10);
-          updateUploadersPoints(8);
-          printAlert("You got it first try, 10 points added");
-        } else if (points == 1) {
-          updatePoints(5);
-          updateUploadersPoints(4);
-          printAlert("Second try! 5 points added");
-        } else if (points == 2) {
-          updatePoints(2);
-          updateUploadersPoints(2);
-          printAlert("Third try! Well done");
-        }
-      } else {
-        points += 1;
-        if (points > 3) {
-          printAlert("Out of tries");
-          files.remove({
-            "url": fileUrl,
-            "path": file.fullPath,
-          });
-        }
-      }
+      fileUrl = await file.getDownloadURL();
+      custom = await file.getMetadata();
     });
+
+    if (i > (wifis.length * 0.75) && i < (wifis.length * 1.25)) {
+      if (points == 0) {
+        updatePoints(10);
+        updateUploadersPoints(8);
+        printAlert("You got it first try, 10 points added");
+        image = true;
+      } else if (points == 1) {
+        updatePoints(5);
+        updateUploadersPoints(4);
+        printAlert("Second try! 5 points added");
+        image = true;
+      } else if (points == 2) {
+        updatePoints(2);
+        updateUploadersPoints(2);
+        printAlert("Third try! Well done");
+        image = true;
+      }
+    } else {
+      points += 1;
+      if (points > 3) {
+        printAlert("Out of tries");
+        image = true;
+      }
+    }
+    await Future.forEach<Reference>(allFiles, (file) async {
+      if (image == true) {
+        setState(() {
+          points = 0;
+          image = false;
+          if (!alreadyGuessed.contains(fileUrl)) {
+            alreadyGuessed.add(fileUrl);
+          }
+          if (custom.customMetadata?['uid'] != id &&
+              alreadyGuessed.contains(fileUrl)) {
+            files.remove({
+              "url": fileUrl,
+              "path": file.fullPath,
+            });
+          }
+        });
+      }
+      //Navigator.pop(context);
+    });
+    print(points);
+    print(alreadyGuessed);
   }
 
   @override
@@ -246,7 +276,9 @@ class gallery_state extends State<Gallery> {
                                           child: Image.network(
                                             image['url'],
                                             scale: 3.0,
-                                          )));
+                                          )
+                                          )
+                                          );
                                 });
                           }
                           return const Center(
