@@ -30,36 +30,47 @@ class _camera_screenState extends State<Camera_Screen> {
   late File imageFile;
   late List<Image> imgs = [];
   late String name;
-  static List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
+  late List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
+  static late List<WifiNetwork> test = <WifiNetwork>[];
   final db = FirebaseDatabase.instance;
-  late String wifi = '';
+  late String wifi = "";
   late String id;
   int i = 0;
   int counter = 0;
   late String data;
+  late List<String> bssids = [];
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   void inputData() {
     id = auth.currentUser!.uid;
   }
 
-  static Future<List<WifiNetwork>> getListOfWifis() async {
+  getListOfWifis() async {
+    //_wifiNetworks = <WifiNetwork>[];
     try {
       _wifiNetworks = await WiFiForIoTPlugin.loadWifiList();
     } on PlatformException {
       _wifiNetworks = <WifiNetwork>[];
     }
-    return Future.value(_wifiNetworks);
+    //return Future.value(_wifiNetworks);
   }
 
-  String wifis(List<WifiNetwork> _wifiNetworks) {
-    wifi.replaceAll(' ', '');
+  wifis() async {
+    //print(_wifiNetworks.length);
+    await getListOfWifis();
+    //print(_wifiNetworks.length);
     for (var b in _wifiNetworks) {
-      if (b.level! > -80) {
-        wifi = (wifi + b.bssid.toString() + ",");
+      if (b.level! > -80 && !bssids.contains(b.bssid.toString())) {
+        //print(b.bssid.toString());
+        bssids.add(b.bssid.toString() + ",");
+        //(wifi + b.bssid.toString() + ",");
       }
     }
-    return wifi;
+    wifi = bssids.join("");
+    //print("in wifis method");
+    //print(wifi);
+    //print(wifi.length);
+    //return wifi;
   }
 
   printAlert(String Message) {
@@ -81,27 +92,18 @@ class _camera_screenState extends State<Camera_Screen> {
     });
   }
 
-  counterLimit() async {
-    inputData();
-    //if counter > 9 then remove camera functionality
-    DatabaseReference ref = FirebaseDatabase.instance.ref("data");
-    DatabaseEvent event = await ref.once();
-    dynamic values = event.snapshot.value;
-    values.forEach((key, values) {
-      if (values["uid"] == id) {
-        int x = values["counter"];
-        if (x < 10) {
-          _getCamera();
-        } else {
-          printAlert("You can only upload 10 images a day");
-        }
-      }
-    });
-  }
-
   _getCamera() async {
-    getListOfWifis();
-    wifis(_wifiNetworks);
+    //wifi = "";
+    //_wifiNetworks = [];
+    //print("wifi se to empty");
+    //print(wifi);
+    //getListOfWifis();
+    //print(wifi.length);
+    bssids = [];
+    wifis();
+    //print(wifi.length);
+    //print("wifi method has been called wifi should be full");
+    //print(wifi);
     inputData();
     XFile? image =
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
@@ -123,6 +125,25 @@ class _camera_screenState extends State<Camera_Screen> {
       print(error);
     }
     i++;
+    
+  }
+
+  counterLimit() async {
+    inputData();
+    //if counter > 9 then remove camera functionality
+    DatabaseReference ref = FirebaseDatabase.instance.ref("data");
+    DatabaseEvent event = await ref.once();
+    dynamic values = event.snapshot.value;
+    values.forEach((key, values) {
+      if (values["uid"] == id) {
+        int x = values["counter"];
+        if (x < 10) {
+          _getCamera();
+        } else {
+          printAlert("You can only upload 10 images a day");
+        }
+      }
+    });
   }
 
   @override

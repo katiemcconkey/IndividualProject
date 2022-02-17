@@ -1,27 +1,30 @@
-// ignore_for_file: camel_case_types
-
-import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile_game/dao.dart';
+import 'package:mobile_game/screens/photo_gallery.dart';
 import 'package:wifi_iot/wifi_iot.dart';
+
+import '../dao.dart';
 import '../homepage.dart';
 import '../nav_bar.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
-import 'imageScreen.dart';
-
-class Gallery extends StatefulWidget {
-  const Gallery({Key? key}) : super(key: key);
+class ImageScreen extends StatefulWidget {
+  final String path;
+  final String url;
+  const ImageScreen({Key? key, required this.path, required this.url})
+      : super(key: key);
 
   @override
-  gallery_state createState() => gallery_state();
+  // ignore: no_logic_in_create_state
+  _ImageScreenState createState() => _ImageScreenState(path, url);
 }
 
-class gallery_state extends State<Gallery> {
+class _ImageScreenState extends State<ImageScreen> {
+  String path;
+  String url;
+  _ImageScreenState(this.path, this.url);
   int points = 0;
   final pic = Dao();
   late int i;
@@ -37,7 +40,6 @@ class gallery_state extends State<Gallery> {
   late List<String> wifi = [];
   late List<String> names = [];
   var info = {};
-  late PageController _pageController;
   late String id;
   List<Map<String, dynamic>> files = [];
   List alreadyGuessed = [];
@@ -50,12 +52,6 @@ class gallery_state extends State<Gallery> {
 
   void inputData() {
     id = auth.currentUser!.uid;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(viewportFraction: 0.8);
   }
 
   getListOfWifis() async {
@@ -81,27 +77,6 @@ class gallery_state extends State<Gallery> {
     });
   }
 
-  Future<List<Map<String, dynamic>>> _loadImages() async {
-    inputData();
-
-    final ListResult result =
-        await storage.ref().list(const ListOptions(maxResults: 10));
-    final List<Reference> allFiles = result.items;
-
-    await Future.forEach<Reference>(allFiles, (file) async {
-      final String fileUrl = await file.getDownloadURL();
-      final FullMetadata custom = await file.getMetadata();
-      if (custom.customMetadata?['uid'] != id) {
-        files.add({
-          "url": fileUrl,
-          "path": file.fullPath,
-        });
-      }
-    });
-
-    return files;
-  }
-
   wificheck() async {
     await getListOfWifis();
     data = [];
@@ -113,6 +88,7 @@ class gallery_state extends State<Gallery> {
   }
 
   updatePoints(int i) async {
+    inputData();
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
@@ -125,6 +101,7 @@ class gallery_state extends State<Gallery> {
   }
 
   updateUploadersPoints(int i) async {
+    inputData();
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
@@ -149,6 +126,7 @@ class gallery_state extends State<Gallery> {
   }
 
   checkWifi(String name) async {
+    inputData();
     await check();
     await wificheck();
     dynamic n;
@@ -217,22 +195,8 @@ class gallery_state extends State<Gallery> {
           }
           if (alreadyGuessed.contains(fileUrl) &&
               custom.customMetadata?['uid'] != id) {
-            //problem is here
-            /*for (var l in files) {
-              l.removeWhere((key, value) => value == fileUrl);
-              l.removeWhere((key, value) => value == file.fullPath);
-              /*if (l == {}) {
-                files.remove(l);
-              }*/
-            }
-            for (var l in files) {
-              print(l);
-            }
-            print(files);
-          }*/
             points = 0;
             image = false;
-            setState(() {});
           }
         }
       }
@@ -266,46 +230,44 @@ class gallery_state extends State<Gallery> {
           title: const Text('Mobile App'),
           centerTitle: true,
         ),
-        body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          //crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Card(
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.network(
+                    url,
+                    scale: 3.0,
+                  )),
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+              Card(
+                  child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    checkWifi(path);
+                  },
+                  child: const Text("click me"),
                 ),
-                Expanded(
-                    child: FutureBuilder(
-                        future: _loadImages(),
-                        builder: (context,
-                            AsyncSnapshot<List<Map<String, dynamic>>>
-                                snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return PageView.builder(
-                                itemCount: snapshot.data?.length ?? 0,
-                                pageSnapping: true,
-                                itemBuilder: (context, index) {
-                                  final Map<String, dynamic> image =
-                                      snapshot.data![index];
-                                  return Container(
-                                      margin: const EdgeInsets.all(10),
-                                      child: GestureDetector(
-                                          onTap: () =>
-                                              {
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) =>  ImageScreen( path: image['path'], url: image['url'])))
-                                                //checkWifi(image['path'])
-                                                },
-                                          child: Image.network(
-                                            image['url'],
-                                            scale: 3.0,
-                                          )));
-                                });
-                          }
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        })),
-              ],
-            )));
+              )),
+              Card(
+                  child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Gallery()));
+                  },
+                  child: const Text("Go Back to view images"),
+                ),
+              )),
+            ])
+          ],
+        ));
   }
 }
