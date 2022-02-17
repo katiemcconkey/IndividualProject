@@ -39,7 +39,7 @@ class NavBar extends StatelessWidget {
             // ignore: avoid_returning_null_for_void
             onTap: () =>
                 //Null,
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const Gallery())),
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const Gallery(alreadyGuessed: [],))),
                 //Navigator.push(context,
                     //MaterialPageRoute(builder: (context) => const Bssid())),
           ),

@@ -261,7 +261,7 @@ class _ImageScreenState extends State<ImageScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Gallery()));
+                            builder: (context) =>  Gallery(alreadyGuessed: alreadyGuessed,)));
                   },
                   child: const Text("Go Back to view images"),
                 ),

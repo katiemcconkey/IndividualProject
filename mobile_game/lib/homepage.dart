@@ -227,7 +227,7 @@ class _MyAppState extends State<MyApp> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Gallery()));
+                                builder: (context) => const Gallery(alreadyGuessed: [],)));
                       },
                       icon: const Icon(Icons.picture_in_picture_outlined),
                     ),
