@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/bssid.dart';
+import 'package:mobile_game/screens/leaderboard.dart';
 import 'screens/cameras.dart';
 import 'screens/photo_gallery.dart';
 
@@ -30,16 +31,16 @@ class NavBar extends StatelessWidget {
             title: const Text('Find Location'),
             // ignore: avoid_returning_null_for_void
             onTap: () => 
-            //Null,
-            Navigator.push(context, MaterialPageRoute(builder: (context) =>  const Bssid())),
+            
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>  const Leader())),
           ),
           ListTile(
             leading: const Icon(Icons.burst_mode_outlined),
             title: const Text('Gallery'),
             // ignore: avoid_returning_null_for_void
             onTap: () =>
-                //Null,
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const Gallery(alreadyGuessed: [],))),
+                Null,
+                //Navigator.push(context, MaterialPageRoute(builder: (context) => const Gallery(alreadyGuessed: [],))),
                 //Navigator.push(context,
                     //MaterialPageRoute(builder: (context) => const Bssid())),
           ),

@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:mobile_game/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_game/main.dart';
+import 'package:mobile_game/screens/bssid.dart';
 import 'package:mobile_game/screens/cameras.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'package:mobile_game/screens/photo_gallery.dart';
@@ -11,7 +11,6 @@ import 'dao.dart';
 import 'data.dart';
 import 'screens/account.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_time_patterns.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -57,11 +56,11 @@ class _MyAppState extends State<MyApp> {
       });
       if (ids.contains(id)) {
       } else {
-        final img = Data(counter, points, id, x);
+        final img = Data(counter, points, id, x, email);
         pic.saveDatas(img);
       }
     } else {
-      final img = Data(counter, points, id, x);
+      final img = Data(counter, points, id, x, email);
       pic.saveDatas(img);
     }
   }
@@ -76,10 +75,9 @@ class _MyAppState extends State<MyApp> {
     if (values != null) {
       values.forEach((key, values) {
         if (values["uid"] == id) {
-          last = values["time"]; 
+          last = values["time"];
           x = DateTime.parse(last);
         }
-       
       });
 
       String y = f.format(DateTime.now()).toString();
@@ -103,11 +101,10 @@ class _MyAppState extends State<MyApp> {
     dynamic values = event.snapshot.value;
     values.forEach((key, values) {
       if (id == values["uid"]) {
-        count =  values["counter"];
+        count = values["counter"];
         x = 10 - count;
       }
     });
-    
   }
 
   @override
@@ -144,7 +141,7 @@ class _MyAppState extends State<MyApp> {
                         icon: const Icon(Icons.home)))
               ],
               backgroundColor: Colors.purple,
-              title: const Text('Mobile App'),
+              title: const Text('Eye Spy 2.0'),
               centerTitle: true,
             ),
             body: Column(
@@ -212,30 +209,6 @@ class _MyAppState extends State<MyApp> {
                 const Card(
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('You still have image locations to guess',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                        )),
-                  ),
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Gallery(alreadyGuessed: [],)));
-                      },
-                      icon: const Icon(Icons.picture_in_picture_outlined),
-                    ),
-                  ),
-                ),
-                const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
                     child: Text('Leaderboard',
                         style: TextStyle(
                           fontSize: 20,
@@ -257,7 +230,33 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                 ),
+                const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('You still have image locations to guess',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                        )),
+                  ),
+                ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton(
+                      onPressed: () {
+                        /*Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Gallery(alreadyGuessed: [],)));*/
+                        Null;
+                      },
+                      icon: const Icon(Icons.picture_in_picture_outlined),
+                    ),
+                  ),
+                ),
               ],
-            )));
+            )
+            ));
   }
 }

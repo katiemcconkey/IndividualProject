@@ -5,9 +5,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:mobile_game/dao.dart';
-import 'package:wifi_iot/wifi_iot.dart';
 import '../homepage.dart';
 import '../nav_bar.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -143,7 +140,9 @@ class gallery_state extends State<Gallery> {
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
-                        })),
+                        }
+                        )
+                        ),
               ],
             )));
   }

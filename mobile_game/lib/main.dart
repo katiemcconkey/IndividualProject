@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_game/homepage.dart';
 import 'package:mobile_game/screens/signup.dart';
+import 'package:flutter/src/material/colors.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,12 +21,8 @@ class FirstPage extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const Login(),
+    return const MaterialApp(
+      home: Login(),
     );
   }
 }
@@ -60,7 +57,7 @@ class _LoginState extends State<Login> {
                     Container(
                       height: double.infinity,
                       width: double.infinity,
-                      color: Colors.indigo[50],
+                      color: const Color.fromARGB(255, 221, 198, 227),
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 25, vertical: 120),
@@ -68,10 +65,10 @@ class _LoginState extends State<Login> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              "Sign In",
+                              "Log in!",
                               style: TextStyle(
-                                  fontSize: 50,
-                                  color: Colors.black,
+                                  fontSize: 70,
+                                  color: Color.fromARGB(255, 58, 3, 68),
                                   fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 30),
@@ -82,15 +79,15 @@ class _LoginState extends State<Login> {
                               },
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return "Please enter Email";
+                                  return "Please enter your email address";
                                 }
                               },
                               textAlign: TextAlign.center,
                               decoration: const InputDecoration(
                                 hintText: 'Email',
                                 prefixIcon: Icon(
-                                  Icons.email,
-                                  color: Colors.black,
+                                  Icons.alternate_email_rounded,
+                                  color: Color.fromARGB(255, 58, 3, 68),
                                 ),
                               ),
                             ),
@@ -99,7 +96,7 @@ class _LoginState extends State<Login> {
                               obscureText: true,
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return "Please enter Password";
+                                  return "Please enter your password";
                                 }
                               },
                               onChanged: (value) {
@@ -109,13 +106,17 @@ class _LoginState extends State<Login> {
                               decoration: const InputDecoration(
                                   hintText: 'Password',
                                   prefixIcon: Icon(
-                                    Icons.lock,
-                                    color: Colors.black,
+                                    Icons.lock_outline_rounded,
+                                    color: Color.fromARGB(255, 58, 3, 68),
                                   )),
                             ),
                             const SizedBox(height: 80),
                             ElevatedButton(
-                              child: const Text('Login'),
+                              style: ElevatedButton.styleFrom(
+                                primary: const Color.fromARGB(255, 58, 3, 68),
+                                onPrimary: Colors.white
+                                ),
+                              child: const Text('Log in'),
                               onPressed: () async {
                                 if (formkey.currentState!.validate()) {
                                   setState(() {
@@ -172,7 +173,7 @@ class _LoginState extends State<Login> {
                                   Text(
                                     "Don't have an Account ?",
                                     style: TextStyle(
-                                        fontSize: 20, color: Colors.black87),
+                                        fontSize: 20, color: Color.fromARGB(255, 58, 3, 68)),
                                   ),
                                   SizedBox(width: 10),
                                   Hero(
@@ -182,7 +183,7 @@ class _LoginState extends State<Login> {
                                       style: TextStyle(
                                           fontSize: 21,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black),
+                                          color: Color.fromARGB(255, 58, 3, 68)),
                                     ),
                                   )
                                 ],
