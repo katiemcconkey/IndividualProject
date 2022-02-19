@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,8 @@ class _MyAppState extends State<MyApp> {
     Leader()
   ];
 
+  final anal = FirebaseAnalytics.instance;
+
   late DateTime checkTime;
   var f = DateFormat("yyyyMMdd");
 
@@ -48,6 +51,7 @@ class _MyAppState extends State<MyApp> {
 
   DatabaseReference ref = FirebaseDatabase.instance.ref("data");
   void check() async {
+    await anal.logEvent(name: 'test');
     String x = f.format(DateTime.now()).toString();
     //DateTime y = DateTime.parse(x);
 
@@ -179,8 +183,8 @@ class _MyAppState extends State<MyApp> {
                         if (!snapshot.hasData) {
                           return const Center(
                               child: CircularProgressIndicator(
-                                valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
-                              ));
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color.fromARGB(255, 221, 198, 227))));
                         } else {
                           return Column(
                             children: [
@@ -239,16 +243,15 @@ class _MyAppState extends State<MyApp> {
                                             255, 58, 3, 68),
                                         onPrimary: Colors.white),
                                   )),
-                                  SizedBox(
-                                    height: 300,
-                                    width: 300,
-                                  child: FittedBox(
+                              SizedBox(
+                                height: 300,
+                                width: 300,
+                                child: FittedBox(
                                     child: Image.asset(
-                                            'assets/glasgowUni.png',
-                                  ),
-                                  fit: BoxFit.cover
-                                  ),
-                                  ),
+                                      'assets/glasgowUni.png',
+                                    ),
+                                    fit: BoxFit.cover),
+                              ),
                             ],
                           );
                         }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_game/homepage.dart';
 import 'package:mobile_game/screens/signup.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,8 @@ class _LoginState extends State<Login> {
   String password = '';
   bool isloading = false;
   late DateTime x;
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -124,9 +127,8 @@ class _LoginState extends State<Login> {
                                     isloading = true;
                                   });
                                   try {
-                                    
-                                        await _auth.signInWithEmailAndPassword(
-                                            email: email, password: password);
+                                    await _auth.signInWithEmailAndPassword(
+                                        email: email, password: password);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
