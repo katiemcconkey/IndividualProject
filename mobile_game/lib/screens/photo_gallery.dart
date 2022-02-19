@@ -18,6 +18,7 @@ class Gallery extends StatefulWidget {
   const Gallery({Key? key, required this.alreadyGuessed}) : super(key: key);
 
   @override
+  // ignore: no_logic_in_create_state
   gallery_state createState() => gallery_state(alreadyGuessed);
 }
 
@@ -35,7 +36,6 @@ class gallery_state extends State<Gallery> {
 
   final db = FirebaseDatabase.instance;
   FirebaseStorage storage = FirebaseStorage.instance;
-  late PageController _pageController;
   late String id;
   List<Map<String, dynamic>> files = [];
 
@@ -51,7 +51,6 @@ class gallery_state extends State<Gallery> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.8);
   }
 
   Future<List<Map<String, dynamic>>> _loadImages() async {

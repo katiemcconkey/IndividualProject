@@ -1,15 +1,15 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_game/homepage.dart';
 import 'package:mobile_game/screens/signup.dart';
-import 'package:flutter/src/material/colors.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await FirebaseAppCheck.instance.activate();
   runApp(
     const FirstPage(),
   );
@@ -21,8 +21,8 @@ class FirstPage extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return  const MaterialApp(
-      home:  Login(),
+    return const MaterialApp(
+      home: Login(),
     );
   }
 }
@@ -47,8 +47,8 @@ class _LoginState extends State<Login> {
       body: isloading
           ? const Center(
               child: CircularProgressIndicator(
-                valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
-              ),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Color.fromARGB(255, 221, 198, 227))),
             )
           : Form(
               key: formkey,
@@ -115,9 +115,8 @@ class _LoginState extends State<Login> {
                             const SizedBox(height: 80),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                primary: const Color.fromARGB(255, 58, 3, 68),
-                                onPrimary: Colors.white
-                                ),
+                                  primary: const Color.fromARGB(255, 58, 3, 68),
+                                  onPrimary: Colors.white),
                               child: const Text('Log in'),
                               onPressed: () async {
                                 if (formkey.currentState!.validate()) {
@@ -125,7 +124,7 @@ class _LoginState extends State<Login> {
                                     isloading = true;
                                   });
                                   try {
-                                    final newUser =
+                                    
                                         await _auth.signInWithEmailAndPassword(
                                             email: email, password: password);
                                     Navigator.push(
@@ -153,6 +152,7 @@ class _LoginState extends State<Login> {
                                         ],
                                       ),
                                     );
+                                    // ignore: avoid_print
                                     print(e);
                                   }
                                   setState(() {
@@ -175,7 +175,8 @@ class _LoginState extends State<Login> {
                                   Text(
                                     "Don't have an Account ?",
                                     style: TextStyle(
-                                        fontSize: 20, color: Color.fromARGB(255, 58, 3, 68)),
+                                        fontSize: 20,
+                                        color: Color.fromARGB(255, 58, 3, 68)),
                                   ),
                                   SizedBox(width: 10),
                                   Hero(
@@ -185,7 +186,8 @@ class _LoginState extends State<Login> {
                                       style: TextStyle(
                                           fontSize: 21,
                                           fontWeight: FontWeight.bold,
-                                          color: Color.fromARGB(255, 58, 3, 68)),
+                                          color:
+                                              Color.fromARGB(255, 58, 3, 68)),
                                     ),
                                   )
                                 ],

@@ -31,7 +31,6 @@ class _camera_screenState extends State<Camera_Screen> {
   late List<Image> imgs = [];
   late String name;
   late List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
-  static late List<WifiNetwork> test = <WifiNetwork>[];
   final db = FirebaseDatabase.instance;
   late String wifi = "";
   late String id;
@@ -80,11 +79,11 @@ class _camera_screenState extends State<Camera_Screen> {
     //return wifi;
   }
 
-  printAlert(String Message) {
+  printAlert(String message) {
     showDialog(
         context: context,
         builder: (ctx) =>
-            AlertDialog(title: const Text("Error"), content: Text(Message)));
+            AlertDialog(title: const Text("Error"), content: Text(message)));
   }
 
   updateCounter() async {
@@ -132,7 +131,6 @@ class _camera_screenState extends State<Camera_Screen> {
       print(error);
     }
     i++;
-    print(imgs.length);
   }
 
   counterLimit() async {

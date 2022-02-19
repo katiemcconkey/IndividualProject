@@ -102,7 +102,7 @@ class _SignUpState extends State<SignUp> {
                                 child:  Text('You have successfully signed up, you can now log in!'),
                                 
                                 ),
-                                duration: Duration(seconds: 5),
+                                duration: const Duration(seconds: 5),
                                 ),
 
                                 );

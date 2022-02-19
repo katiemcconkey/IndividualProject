@@ -69,5 +69,6 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:29.0.1')
     implementation 'com.google.android.gms:play-services-safetynet:17.0.1'
     implementation 'com.google.firebase:firebase-appcheck-safetynet:16.0.0-beta04'
+    implementation 'com.google.firebase:firebase-appcheck-debug:16.0.0-beta04'
 
 }

@@ -33,7 +33,7 @@ class _LeaderState extends State<Leader> {
     Account(),
     Leader()
   ];
-  late String Rank;
+  late String rank;
 
   void inputData() {
     id = auth.currentUser!.uid;
@@ -47,7 +47,7 @@ class _LeaderState extends State<Leader> {
 
   getSortedMap() async {
     infos = {};
-    var diff;
+    int diff;
     inputData();
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
@@ -82,16 +82,16 @@ class _LeaderState extends State<Leader> {
   String place(int index) {
     int x = (index + 1);
     if (x == 1) {
-      Rank = x.toString() + "st    ";
+      rank = x.toString() + "st    ";
     } else if (x == 2) {
-      Rank = x.toString() + "nd    ";
+      rank = x.toString() + "nd    ";
     } else if (x == 3) {
-      Rank = x.toString() + "rd    ";
+      rank = x.toString() + "rd    ";
     } else {
-      Rank = x.toString() + "th    ";
+      rank = x.toString() + "th    ";
     }
 
-    return Rank;
+    return rank;
   }
 
   @override

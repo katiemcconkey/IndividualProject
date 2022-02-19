@@ -91,7 +91,6 @@ class _MyAppState extends State<MyApp> {
       if (current.isAfter(x)) {
         values.forEach((key, values) {
           if (values["uid"] == id) {
-            int x = values["counter"];
             ref.child(key).update({"counter": 0});
             ref.child(key).update({"time": y});
           }
@@ -209,7 +208,7 @@ class _MyAppState extends State<MyApp> {
                                         fontWeight: FontWeight.bold),
                                   )),
                               Card(
-                                  margin: EdgeInsets.all(15.0),
+                                  margin: const EdgeInsets.all(15.0),
                                   borderOnForeground: false,
                                   elevation: 0.0,
                                   child: Text(
@@ -240,7 +239,7 @@ class _MyAppState extends State<MyApp> {
                                             255, 58, 3, 68),
                                         onPrimary: Colors.white),
                                   )),
-                                  Container(
+                                  SizedBox(
                                     height: 300,
                                     width: 300,
                                   child: FittedBox(

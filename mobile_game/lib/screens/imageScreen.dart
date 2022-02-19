@@ -1,3 +1,4 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -116,11 +117,11 @@ class _ImageScreenState extends State<ImageScreen> {
     });
   }
 
-  printAlert(String Message) {
+  printAlert(String message) {
     showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-            title: const Text("Location Check"), content: Text(Message)));
+            title: const Text("Location Check"), content: Text(message)));
   }
 
   backToGallery() {
@@ -139,7 +140,6 @@ class _ImageScreenState extends State<ImageScreen> {
     dynamic n;
     dynamic m;
     int i = 0;
-    int k = 0;
     late String fileUrl;
     late FullMetadata custom;
     infos.forEach((key, value) {
@@ -194,7 +194,6 @@ class _ImageScreenState extends State<ImageScreen> {
     await Future.forEach<Reference>(allFiles, (file) async {
       fileUrl = await file.getDownloadURL();
       custom = await file.getMetadata();
-      k++;
       if (custom.customMetadata?['uid'] != id) {
         if (image == true) {
           if (!alreadyGuessed.contains(fileUrl)) {
