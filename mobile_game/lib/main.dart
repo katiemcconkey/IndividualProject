@@ -21,8 +21,8 @@ class FirstPage extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Login(),
+    return  const MaterialApp(
+      home:  Login(),
     );
   }
 }
@@ -46,7 +46,9 @@ class _LoginState extends State<Login> {
     return Scaffold(
       body: isloading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
+              ),
             )
           : Form(
               key: formkey,

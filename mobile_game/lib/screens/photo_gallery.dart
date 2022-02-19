@@ -176,7 +176,9 @@ class gallery_state extends State<Gallery> {
                                 });
                           }
                           return const Center(
-                            child: CircularProgressIndicator(),
+                            child: CircularProgressIndicator(
+                              valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
+                            ),
                           );
                         })),
               ],

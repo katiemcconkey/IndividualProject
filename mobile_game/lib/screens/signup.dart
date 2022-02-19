@@ -26,7 +26,9 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
       body: loading ? const Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(
+          valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
+        ),
       )
       :Form(key: formkey, 
       child: AnnotatedRegion<SystemUiOverlayStyle>(

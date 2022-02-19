@@ -179,7 +179,9 @@ class _MyAppState extends State<MyApp> {
                       builder: (context, AsyncSnapshot<int> snapshot) {
                         if (!snapshot.hasData) {
                           return const Center(
-                              child: CircularProgressIndicator());
+                              child: CircularProgressIndicator(
+                                valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
+                              ));
                         } else {
                           return Column(
                             children: [

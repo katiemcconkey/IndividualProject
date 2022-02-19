@@ -33,6 +33,7 @@ class _LeaderState extends State<Leader> {
     Account(),
     Leader()
   ];
+  late String Rank;
 
   void inputData() {
     id = auth.currentUser!.uid;
@@ -53,9 +54,7 @@ class _LeaderState extends State<Leader> {
     if (values != null) {
       values.forEach((key, values) {
         m = values["points"];
-        //k = values["username"];
         k = getUsername(values["username"]);
-        //values["uid"];
         infos[k] = m;
       });
     }
@@ -80,50 +79,67 @@ class _LeaderState extends State<Leader> {
     return nums;
   }
 
+  String place(int index) {
+    int x = (index + 1);
+    if (x == 1) {
+      Rank = x.toString() + "st    ";
+    } else if (x == 2) {
+      Rank = x.toString() + "nd    ";
+    } else if (x == 3) {
+      Rank = x.toString() + "rd    ";
+    } else {
+      Rank = x.toString() + "th    ";
+    }
+
+    return Rank;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 203, 162, 211),
-        title: const Text('Eye Spy 2.0'),
-        centerTitle: true,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
-        selectedFontSize: 8,
-        unselectedFontSize: 8,
-        unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
-        iconSize: 30,
-        currentIndex: 0,
-        onTap: (currentIndex) {
-          Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => (_screens[currentIndex])));
-        },
-        items: const [
-          BottomNavigationBarItem(
-            label: "homepage",
-            icon: Icon(Icons.home),
-          ),
-          BottomNavigationBarItem(
-            label: "upload image",
-            icon: Icon(Icons.camera),
-          ),
-          BottomNavigationBarItem(
-            label: "view gallery",
-            icon: Icon(Icons.burst_mode_outlined),
-          ),
-          BottomNavigationBarItem(
-            label: "view account",
-            icon: Icon(Icons.account_circle_outlined),
-          ),
-          BottomNavigationBarItem(
-            label: "leaderboard",
-            icon: Icon(Icons.leaderboard_outlined),
-          ),
-        ],
-      ),
+              backgroundColor: const Color.fromARGB(255, 203, 162, 211),
+              title: const Text('Eye Spy 2.0'),
+              centerTitle: true,
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
+              selectedFontSize: 8,
+              unselectedFontSize: 8,
+              unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
+              iconSize: 30,
+              currentIndex: 0,
+              onTap: (currentIndex) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => (_screens[currentIndex])));
+              },
+              items: const [
+                BottomNavigationBarItem(
+                  label: "homepage",
+                  icon: Icon(Icons.home),
+                ),
+                BottomNavigationBarItem(
+                  label: "upload image",
+                  icon: Icon(Icons.camera),
+                ),
+                BottomNavigationBarItem(
+                  label: "view gallery",
+                  icon: Icon(Icons.burst_mode_outlined),
+                ),
+                BottomNavigationBarItem(
+                  label: "view account",
+                  icon: Icon(Icons.account_circle_outlined),
+                ),
+                BottomNavigationBarItem(
+                  label: "leaderboard",
+                  icon: Icon(Icons.leaderboard_outlined),
+                ),
+              ],
+            ),
             body: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -138,45 +154,66 @@ class _LeaderState extends State<Leader> {
                                 (context, AsyncSnapshot<List<int>> snapshot) {
                               if (!snapshot.hasData) {
                                 return const Center(
-                                    child: CircularProgressIndicator());
+                                    child: CircularProgressIndicator(
+                                      valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
+                                    ));
                               } else {
-                                return Column(
-                                    children: List.generate(
-                                        nums.length,
-                                        (index) => Container(
-                                              margin: const EdgeInsets.all(0),
-                                              child: Table(
-                                                border: TableBorder.all(),
+                                return Center(
+                                    child: Column(
+                                        children: List.generate(
+                                  nums.length,
+                                  (index) => Row(
+                                    children: <Widget>[
+                                      SizedBox(
+                                          height: 90,
+                                          width: 370,
+                                          child: Card(
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          25)),
+                                              margin:
+                                                  const EdgeInsets.all(15.0),
+                                              borderOnForeground: true,
+                                              elevation: 20.0,
+                                              child: Row(
                                                 children: [
-                                                  TableRow(
-                                                    children: [
-                                                      Column(
-                                                        children: [
-                                                          Text((index + 1)
-                                                              .toString())
-                                                        ],
-                                                      ),
-                                                      Column(
-                                                        children: [
-                                                          Text(nums[index]
-                                                              .toString())
-                                                        ],
-                                                      ),
-                                                      Column(
-                                                        children: [
-                                                          Text(sortedMap.keys
-                                                              .firstWhere((n) =>
-                                                                  sortedMap[
-                                                                      n] ==
-                                                                  nums[index])
-                                                              .toString())
-                                                        ],
-                                                      )
-                                                    ],
+                                                  Card(
+                                                      margin:
+                                                          const EdgeInsets.all(
+                                                              15),
+                                                      borderOnForeground: false,
+                                                      elevation: 0.0,
+                                                      child:
+                                                          Text(place(index))),
+                                                  Card(
+                                                      margin:
+                                                          const EdgeInsets.all(
+                                                              15),
+                                                      borderOnForeground: false,
+                                                      elevation: 0.0,
+                                                      child: Text(nums[index]
+                                                              .toString() +
+                                                          "     ")),
+                                                  Card(
+                                                    margin:
+                                                        const EdgeInsets.all(
+                                                            15),
+                                                    borderOnForeground: false,
+                                                    elevation: 0.0,
+                                                    child: Text(
+                                                      sortedMap.keys
+                                                          .firstWhere((n) =>
+                                                              sortedMap[n] ==
+                                                              nums[index])
+                                                          .toString(),
+                                                    ),
                                                   )
                                                 ],
-                                              ),
-                                            )));
+                                              )))
+                                    ],
+                                  ),
+                                )));
                               }
                             })),
                   ],
