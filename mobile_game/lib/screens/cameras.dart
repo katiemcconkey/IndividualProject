@@ -2,12 +2,12 @@
 
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_game/nav_bar.dart';
-import 'package:mobile_game/main.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:mobile_game/screens/account.dart';
+import 'package:mobile_game/screens/leaderboard.dart';
+import 'package:mobile_game/screens/photo_gallery.dart';
 import 'package:path/path.dart' as path;
 import 'package:wifi_iot/wifi_iot.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -39,6 +39,13 @@ class _camera_screenState extends State<Camera_Screen> {
   int counter = 0;
   late String data;
   late List<String> bssids = [];
+  final List _screens = const [
+    MyApp(),
+    Camera_Screen(),
+    Gallery(alreadyGuessed: []),
+    Account(),
+    Leader()
+  ];
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   void inputData() {
@@ -125,7 +132,7 @@ class _camera_screenState extends State<Camera_Screen> {
       print(error);
     }
     i++;
-    
+    print(imgs.length);
   }
 
   counterLimit() async {
@@ -150,35 +157,86 @@ class _camera_screenState extends State<Camera_Screen> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-      drawer: const NavBar(),
       appBar: AppBar(
-        actions: [
-          Builder(
-              builder: (context) => IconButton(
-                    icon: const Icon(Icons.map),
-                    onPressed: () {
-                      Null;
-                    },
-                  )),
-          Builder(
-              builder: (context) => IconButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const MyApp()));
-                  },
-                  icon: const Icon(Icons.home)))
-        ],
-        backgroundColor: Colors.purple,
-        title: const Text('Mobile App'),
+        backgroundColor: const Color.fromARGB(255, 203, 162, 211),
+        title: const Text('Eye Spy 2.0'),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: imgs.length,
-        itemBuilder: (context, i) =>
-            Column(children: [imgs[i], const Divider()]),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
+        selectedFontSize: 8,
+        unselectedFontSize: 8,
+        unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
+        iconSize: 30,
+        currentIndex: 0,
+        onTap: (currentIndex) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => (_screens[currentIndex])));
+        },
+        items: const [
+          BottomNavigationBarItem(
+            label: "homepage",
+            icon: Icon(Icons.home),
+          ),
+          BottomNavigationBarItem(
+            label: "upload image",
+            icon: Icon(Icons.camera),
+          ),
+          BottomNavigationBarItem(
+            label: "view gallery",
+            icon: Icon(Icons.burst_mode_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: "view account",
+            icon: Icon(Icons.account_circle_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: "leaderboard",
+            icon: Icon(Icons.leaderboard_outlined),
+          ),
+        ],
       ),
+      body: Center(
+        child: Column(
+          children: [
+            const Card(
+                margin: EdgeInsets.all(20.0),
+                borderOnForeground: false,
+                elevation: 0.0,
+                child: Text(
+                  "Scroll to view images you uploaded today : ",
+                  style: TextStyle(
+                      color: Color.fromARGB(255, 58, 3, 68),
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold),
+                )),
+            SizedBox(
+              height: 400,
+              width: 350,
+              child: ListView.builder(
+                itemCount: imgs.length,
+                itemBuilder: (context, i) => Column(children: [
+                  imgs[i],
+                  const Divider(
+                    height: 2.0,
+                  )
+                ]),
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
+          backgroundColor: const Color.fromARGB(255, 203, 162, 211),
+          child: const Icon(
+            Icons.add,
+            color: Color.fromARGB(255, 58, 3, 68),
+          ),
           onPressed: () async {
             counterLimit();
           }),

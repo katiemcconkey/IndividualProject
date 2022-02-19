@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mobile_game/main.dart';
+import 'package:mobile_game/screens/cameras.dart';
+import 'package:mobile_game/screens/leaderboard.dart';
+import 'package:mobile_game/screens/photo_gallery.dart';
 import '../homepage.dart';
-import '../nav_bar.dart';
 
 class Account extends StatefulWidget {
   const Account({Key? key}) : super(key: key);
@@ -13,48 +14,122 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
+  late String email;
+  late List emails;
+  late String username;
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  final List _screens = const [
+    MyApp(),
+    Camera_Screen(),
+    Gallery(alreadyGuessed: []),
+    Account(),
+    Leader()
+  ];
+
+  void inputData() {
+    email = auth.currentUser!.email.toString();
+  }
+
+  String getUsername() {
+    inputData();
+    emails = email.split("@");
+    username = emails[0];
+    return username;
+  }
+
   Future signout() async {
-    FirebaseAuth _auth = FirebaseAuth.instance;
-    await _auth.signOut().then((value) => Navigator.of(context)
+    //FirebaseAuth _auth = FirebaseAuth.instance;
+    await auth.signOut().then((value) => Navigator.of(context)
         .pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => FirstPage()),
+            MaterialPageRoute(builder: (context) => const FirstPage()),
             (route) => false));
   }
 
   @override
   Widget build(BuildContext context) {
+    getUsername();
     return MaterialApp(
         home: Scaffold(
-      drawer: const NavBar(),
       appBar: AppBar(
-        actions: [
-          Builder(
-              builder: (context) => IconButton(
-                    icon: const Icon(Icons.map),
-                    onPressed: () {
-                      Null;
-                    },
-                  )),
-          Builder(
-              builder: (context) => IconButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const MyApp()));
-                  },
-                  icon: const Icon(Icons.home)))
-        ],
-        backgroundColor: Colors.purple,
-        title: const Text('Mobile App'),
+        backgroundColor: const Color.fromARGB(255, 203, 162, 211),
+        title: const Text('Eye Spy 2.0'),
         centerTitle: true,
       ),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text("Sign out"),
-          onPressed: () {
-            signout();
-          },
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
+        selectedFontSize: 8,
+        unselectedFontSize: 8,
+        unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
+        iconSize: 30,
+        currentIndex: 0,
+        onTap: (currentIndex) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => (_screens[currentIndex])));
+        },
+        items: const [
+          BottomNavigationBarItem(
+            label: "homepage",
+            icon: Icon(Icons.home),
+          ),
+          BottomNavigationBarItem(
+            label: "upload image",
+            icon: Icon(Icons.camera),
+          ),
+          BottomNavigationBarItem(
+            label: "view gallery",
+            icon: Icon(Icons.burst_mode_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: "view account",
+            icon: Icon(Icons.account_circle_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: "leaderboard",
+            icon: Icon(Icons.leaderboard_outlined),
+          ),
+        ],
       ),
-    ));
+      body: Column(
+        children: [
+      Column(
+        children: [
+          Card(
+              margin: const EdgeInsets.all(20.0),
+              borderOnForeground: false,
+              elevation: 0.0,
+              child: Text(
+                "Welcome, " + username,
+                style: const TextStyle(
+                    color: Color.fromARGB(255, 58, 3, 68),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold),
+              )),
+              ]),
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                primary: const Color.fromARGB(255, 58, 3, 68),
+                onPrimary: Colors.white),
+            child: const Text("Sign out"),
+            onPressed: () {
+              signout();
+            },
+          )
+              ],
+            )
+          )
+        ],)
+      )
+      
+    );
   }
 }

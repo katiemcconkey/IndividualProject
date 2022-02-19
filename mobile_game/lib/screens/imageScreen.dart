@@ -7,8 +7,6 @@ import 'package:mobile_game/screens/photo_gallery.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 
 import '../dao.dart';
-import '../homepage.dart';
-import '../nav_bar.dart';
 
 class ImageScreen extends StatefulWidget {
   final String path;
@@ -125,6 +123,15 @@ class _ImageScreenState extends State<ImageScreen> {
             title: const Text("Location Check"), content: Text(Message)));
   }
 
+  backToGallery() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Gallery(
+                  alreadyGuessed: alreadyGuessed,
+                )));
+  }
+
   checkWifi(String name) async {
     inputData();
     await check();
@@ -180,7 +187,7 @@ class _ImageScreenState extends State<ImageScreen> {
         printAlert("You have 1 try left");
       }
       if (points >= 3) {
-        printAlert("Out of tries");
+        printAlert("Out of tries, no points.");
         image = true;
       }
     }
@@ -197,6 +204,7 @@ class _ImageScreenState extends State<ImageScreen> {
               custom.customMetadata?['uid'] != id) {
             points = 0;
             image = false;
+            backToGallery();
           }
         }
       }
@@ -206,28 +214,9 @@ class _ImageScreenState extends State<ImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: const NavBar(),
         appBar: AppBar(
-          actions: [
-            Builder(
-                builder: (context) => IconButton(
-                      icon: const Icon(Icons.map),
-                      onPressed: () {
-                        Null;
-                      },
-                    )),
-            Builder(
-                builder: (context) => IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MyApp()));
-                    },
-                    icon: const Icon(Icons.home)))
-          ],
-          backgroundColor: Colors.purple,
-          title: const Text('Mobile App'),
+          backgroundColor: const Color.fromARGB(255, 203, 162, 211),
+          title: const Text('Eye Spy 2.0'),
           centerTitle: true,
         ),
         body: Column(
@@ -235,6 +224,9 @@ class _ImageScreenState extends State<ImageScreen> {
           //crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Card(
+              margin: const EdgeInsets.all(10.0),
+              borderOnForeground: false,
+              elevation: 0.0,
               child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Image.network(
@@ -244,28 +236,37 @@ class _ImageScreenState extends State<ImageScreen> {
             ),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
               Card(
+                  margin: const EdgeInsets.all(10.0),
+                  borderOnForeground: false,
+                  elevation: 0.0,
                   child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    checkWifi(path);
-                  },
-                  child: const Text("click me"),
-                ),
-              )),
+                    padding: const EdgeInsets.all(2.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: const Color.fromARGB(255, 58, 3, 68),
+                          onPrimary: Colors.white),
+                      onPressed: () {
+                        checkWifi(path);
+                      },
+                      child: const Text("Check location"),
+                    ),
+                  )),
               Card(
+                  margin: const EdgeInsets.all(10.0),
+                  borderOnForeground: false,
+                  elevation: 0.0,
                   child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>  Gallery(alreadyGuessed: alreadyGuessed,)));
-                  },
-                  child: const Text("Go Back to view images"),
-                ),
-              )),
+                    padding: const EdgeInsets.all(2.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: const Color.fromARGB(255, 58, 3, 68),
+                          onPrimary: Colors.white),
+                      onPressed: () {
+                        backToGallery();
+                      },
+                      child: const Text("Back to gallery"),
+                    ),
+                  )),
             ])
           ],
         ));

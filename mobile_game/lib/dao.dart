@@ -16,16 +16,4 @@ class Dao {
   void saveDatas(Data data) {
     ref.push().set(data.toJson());
   }
-
-
-  Query getPhotoQuery() {
-    return _ref;
-  }
-
-  String getData() {
-    _ref.child('photos').child('wifi').once().then((dynamic snap) {
-      data = snap.value as String;
-    });
-    return data;
-  }
 }

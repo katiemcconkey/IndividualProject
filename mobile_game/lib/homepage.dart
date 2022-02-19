@@ -1,9 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:mobile_game/nav_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_game/main.dart';
-import 'package:mobile_game/screens/bssid.dart';
 import 'package:mobile_game/screens/cameras.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'package:mobile_game/screens/photo_gallery.dart';
@@ -29,6 +26,13 @@ class _MyAppState extends State<MyApp> {
   late String k;
   late int count;
   late int x = 0;
+  final List _screens = const [
+    MyApp(),
+    Camera_Screen(),
+    Gallery(alreadyGuessed: []),
+    Account(),
+    Leader()
+  ];
 
   late DateTime checkTime;
   var f = DateFormat("yyyyMMdd");
@@ -96,7 +100,8 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  getCounter() async {
+  Future<int> getCounter() async {
+    x = 0;
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
     values.forEach((key, values) {
@@ -105,6 +110,7 @@ class _MyAppState extends State<MyApp> {
         x = 10 - count;
       }
     });
+    return x;
   }
 
   @override
@@ -113,150 +119,139 @@ class _MyAppState extends State<MyApp> {
     check();
     updateCounter();
     getCounter();
-
     return MaterialApp(
         home: Scaffold(
-            drawer: const NavBar(),
             appBar: AppBar(
-              actions: [
-                Builder(
-                    builder: (context) => IconButton(
-                          icon: const Icon(Icons.map),
-                          onPressed: () {
-                            // Null;
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Login()));
-                          },
-                        )),
-                Builder(
-                    builder: (context) => IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MyApp()));
-                        },
-                        icon: const Icon(Icons.home)))
-              ],
-              backgroundColor: Colors.purple,
+              backgroundColor: const Color.fromARGB(255, 203, 162, 211),
               title: const Text('Eye Spy 2.0'),
               centerTitle: true,
             ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              //crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const Card(
-                    child: Padding(
-                  padding: EdgeInsets.all(0),
-                  child: Text('Welcome Back, ',
-                      style: TextStyle(
-                        fontSize: 32,
-                        color: Colors.purple,
-                      )),
-                )),
-                const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('View your account',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                        )),
-                  ),
+            bottomNavigationBar: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
+              selectedFontSize: 8,
+              unselectedFontSize: 8,
+              unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
+              iconSize: 30,
+              currentIndex: 0,
+              onTap: (currentIndex) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => (_screens[currentIndex])));
+              },
+              items: const [
+                BottomNavigationBarItem(
+                  label: "homepage",
+                  icon: Icon(Icons.home),
                 ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Account()));
-                      },
-                      icon: const Icon(Icons.account_circle_outlined),
-                    ),
-                  ),
+                BottomNavigationBarItem(
+                  label: "upload image",
+                  icon: Icon(Icons.camera),
                 ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        'You have ' + x.toString() + ' images left to upload',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                        )),
-                  ),
+                BottomNavigationBarItem(
+                  label: "view gallery",
+                  icon: Icon(Icons.burst_mode_outlined),
                 ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Camera_Screen()));
-                      },
-                      icon: const Icon(Icons.switch_camera_outlined),
-                    ),
-                  ),
+                BottomNavigationBarItem(
+                  label: "view account",
+                  icon: Icon(Icons.account_circle_outlined),
                 ),
-                const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('Leaderboard',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                        )),
-                  ),
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Leader()));
-                      },
-                      icon: const Icon(Icons.leaderboard_outlined),
-                    ),
-                  ),
-                ),
-                const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('You still have image locations to guess',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                        )),
-                  ),
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IconButton(
-                      onPressed: () {
-                        /*Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Gallery(alreadyGuessed: [],)));*/
-                        Null;
-                      },
-                      icon: const Icon(Icons.picture_in_picture_outlined),
-                    ),
-                  ),
+                BottomNavigationBarItem(
+                  label: "leaderboard",
+                  icon: Icon(Icons.leaderboard_outlined),
                 ),
               ],
-            )
-            ));
+            ),
+            body: Center(
+                child: Column(children: [
+              const Padding(padding: EdgeInsets.all(10.0)),
+              const Text(
+                "How to play:",
+                style: TextStyle(
+                    color: Color.fromARGB(255, 58, 3, 68),
+                    fontSize: 27,
+                    fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                  child: FutureBuilder(
+                      future: getCounter(),
+                      builder: (context, AsyncSnapshot<int> snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else {
+                          return Column(
+                            children: [
+                              const Card(
+                                  margin: EdgeInsets.all(10.0),
+                                  borderOnForeground: false,
+                                  elevation: 0.0,
+                                  //color: Color.fromARGB(255, 203, 162, 211),
+                                  child: Text(
+                                    "Take and receive up to 10 images a day. When you receive a new image, go and find where you think this image was taken and allow the app to check if you're in the correct location using wifi. You recieve points for guessing the correct location as well as others guessing your image correctly.",
+                                    style: TextStyle(
+                                        color: Color.fromARGB(255, 58, 3, 68),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal),
+                                  )),
+                              const Card(
+                                  margin: EdgeInsets.all(10.0),
+                                  borderOnForeground: false,
+                                  elevation: 0.0,
+                                  child: Text(
+                                    "Get started now : ",
+                                    style: TextStyle(
+                                        color: Color.fromARGB(255, 58, 3, 68),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                              Card(
+                                  margin: EdgeInsets.all(15.0),
+                                  borderOnForeground: false,
+                                  elevation: 0.0,
+                                  child: Text(
+                                    "You have " +
+                                        x.toString() +
+                                        " images left to upload today",
+                                    style: const TextStyle(
+                                        color: Color.fromARGB(255, 58, 3, 68),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal),
+                                  )),
+                              Card(
+                                  margin: const EdgeInsets.all(10.0),
+                                  borderOnForeground: false,
+                                  elevation: 0.0,
+                                  child: ElevatedButton(
+                                    child: const Text(
+                                        "Click here to upload an image"),
+                                    onPressed: () => {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Camera_Screen()))
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: const Color.fromARGB(
+                                            255, 58, 3, 68),
+                                        onPrimary: Colors.white),
+                                  )),
+                                  Container(
+                                    height: 300,
+                                    width: 300,
+                                  child: FittedBox(
+                                    child: Image.asset(
+                                            'assets/glasgowUni.png',
+                                  ),
+                                  fit: BoxFit.cover
+                                  ),
+                                  ),
+                            ],
+                          );
+                        }
+                      }))
+            ]))));
   }
 }
