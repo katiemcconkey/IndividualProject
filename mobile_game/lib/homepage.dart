@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   int counter = 0;
   int points = 0;
   final pic = Dao();
@@ -35,7 +36,6 @@ class _MyAppState extends State<MyApp> {
     Leader()
   ];
 
-  final anal = FirebaseAnalytics.instance;
 
   late DateTime checkTime;
   var f = DateFormat("yyyyMMdd");
@@ -51,9 +51,7 @@ class _MyAppState extends State<MyApp> {
 
   DatabaseReference ref = FirebaseDatabase.instance.ref("data");
   void check() async {
-    await anal.logEvent(name: 'test');
     String x = f.format(DateTime.now()).toString();
-    //DateTime y = DateTime.parse(x);
 
     List ids = [];
     DatabaseEvent event = await ref.once();

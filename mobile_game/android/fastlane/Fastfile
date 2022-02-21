@@ -1,0 +1,16 @@
+default_platform(:android)
+
+platform :android do
+ desc "Deploy to Firebase"
+ lane :deploy do
+  begin
+   firebase_app_distribution(
+    groups: "me",
+    release_notes: "Bug fixes and improvements.",
+    apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
+    firebase_cli_path: "/usr/local/bin/firebase",
+    firebase_cli_token: "1//036Adl0djlqNZCgYIARAAGAMSNwF-L9IrznrUX7ctDd58iASnQ0G-CapNdroXgCYWr2LSjNLx_JJaoaalko3SFsHLC9Yqn63lzCg",
+    app: "1:670292048176:android:f87ba0aa98ed9d57f7f0f5")
+  end
+ end 
+end
