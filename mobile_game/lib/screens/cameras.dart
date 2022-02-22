@@ -15,6 +15,7 @@ import '../homepage.dart';
 import '../photo.dart';
 import '../dao.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class Camera_Screen extends StatefulWidget {
   const Camera_Screen({Key? key}) : super(key: key);
@@ -38,13 +39,17 @@ class _camera_screenState extends State<Camera_Screen> {
   int counter = 0;
   late String data;
   late List<String> bssids = [];
+  var f = DateFormat("yyyyMMdd");
   final List _screens = const [
     MyApp(),
     Camera_Screen(),
-    Gallery(alreadyGuessed: []),
+    Gallery(),
     Account(),
     Leader()
   ];
+
+
+  List<String> files = [];
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   void inputData() {
@@ -99,32 +104,24 @@ class _camera_screenState extends State<Camera_Screen> {
   }
 
   _getCamera() async {
-    //wifi = "";
-    //_wifiNetworks = [];
-    //print("wifi se to empty");
-    //print(wifi);
-    //getListOfWifis();
-    //print(wifi.length);
     bssids = [];
     wifis();
-    //print(wifi.length);
-    //print("wifi method has been called wifi should be full");
-    //print(wifi);
     inputData();
+    String y = f.format(DateTime.now()).toString();
     XFile? image =
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
       imageFile = File(image!.path);
       imgs.add(Image.file(imageFile));
+      files.add(image.path);
       name = path.basename(image.path);
     });
     final img = photo(name, wifi, id);
     pic.saveData(img);
     try {
       updateCounter();
-      await storage
-          .ref(name)
-          .putFile(imageFile, SettableMetadata(customMetadata: {'uid': id}));
+      await storage.ref(name).putFile(
+          imageFile, SettableMetadata(customMetadata: {'uid': id, 'time': y}));
       setState(() {});
     } on FirebaseException catch (error) {
       // ignore: avoid_print
@@ -205,7 +202,7 @@ class _camera_screenState extends State<Camera_Screen> {
                 borderOnForeground: false,
                 elevation: 0.0,
                 child: Text(
-                  "Scroll to view images you uploaded today : ",
+                  "Scroll to view the image you just uploaded : ",
                   style: TextStyle(
                       color: Color.fromARGB(255, 58, 3, 68),
                       fontSize: 17,

@@ -10,26 +10,22 @@ import 'package:mobile_game/screens/cameras.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import '../homepage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
+import 'package:intl/intl.dart';
 import 'imageScreen.dart';
 
 class Gallery extends StatefulWidget {
-  final List alreadyGuessed;
-  const Gallery({Key? key, required this.alreadyGuessed}) : super(key: key);
+  const Gallery({Key? key}) : super(key: key);
 
   @override
   // ignore: no_logic_in_create_state
-  gallery_state createState() => gallery_state(alreadyGuessed);
+  gallery_state createState() => gallery_state();
 }
 
 class gallery_state extends State<Gallery> {
-  List alreadyGuessed;
-  gallery_state(this.alreadyGuessed);
-
   final List _screens = const [
     MyApp(),
     Camera_Screen(),
-    Gallery(alreadyGuessed: []),
+    Gallery(),
     Account(),
     Leader()
   ];
@@ -38,9 +34,17 @@ class gallery_state extends State<Gallery> {
   FirebaseStorage storage = FirebaseStorage.instance;
   late String id;
   List<Map<String, dynamic>> files = [];
+  var f = DateFormat("yyyyMMdd");
+  bool update = false;
 
   Map<String, List<String>> infos = {};
   DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
+  DatabaseReference _ref = FirebaseDatabase.instance.ref("data");
+
+  late String guessed = '';
+  late List<String> alreadyGuessed = [];
+  late String guesses = "";
+  late List<String> urls = [];
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -53,16 +57,39 @@ class gallery_state extends State<Gallery> {
     super.initState();
   }
 
-  Future<List<Map<String, dynamic>>> _loadImages() async {
+  getAlreadyGuessed() async {
     inputData();
+    alreadyGuessed = [];
+    guessed = "";
+    DatabaseEvent event = await _ref.once();
+    dynamic values = event.snapshot.value;
+    values.forEach((key, values) {
+      if (values['uid'] == id) {
+        guessed = values['alreadyGuessed'];
+      }
 
+      guessed = guessed.replaceAll(' ', '');
+      if (guessed != '') {
+        alreadyGuessed = guessed.split(",");
+      } else {
+        alreadyGuessed = [];
+      }
+    });
+
+    return alreadyGuessed;
+  }
+
+  Future<List<Map<String, dynamic>>> _loadImages() async {
+    await getAlreadyGuessed();
+    DatabaseEvent event = await ref.once();
+    dynamic values = event.snapshot.value;
     final ListResult result =
         await storage.ref().list(const ListOptions(maxResults: 10));
     final List<Reference> allFiles = result.items;
-
     await Future.forEach<Reference>(allFiles, (file) async {
       final String fileUrl = await file.getDownloadURL();
       final FullMetadata custom = await file.getMetadata();
+
       if (custom.customMetadata?['uid'] != id &&
           !alreadyGuessed.contains(fileUrl)) {
         files.add({
@@ -71,7 +98,6 @@ class gallery_state extends State<Gallery> {
         });
       }
     });
-
     return files;
   }
 
@@ -176,8 +202,8 @@ class gallery_state extends State<Gallery> {
                           }
                           return const Center(
                             child: CircularProgressIndicator(
-                              valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
-                            ),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color.fromARGB(255, 221, 198, 227))),
                           );
                         })),
               ],

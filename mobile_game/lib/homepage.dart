@@ -28,14 +28,14 @@ class _MyAppState extends State<MyApp> {
   late String k;
   late int count;
   late int x = 0;
+  String alreadyGuessed = '';
   final List _screens = const [
     MyApp(),
     Camera_Screen(),
-    Gallery(alreadyGuessed: []),
+    Gallery(),
     Account(),
     Leader()
   ];
-
 
   late DateTime checkTime;
   var f = DateFormat("yyyyMMdd");
@@ -62,11 +62,11 @@ class _MyAppState extends State<MyApp> {
       });
       if (ids.contains(id)) {
       } else {
-        final img = Data(counter, points, id, x, email);
+        final img = Data(counter, points, id, x, alreadyGuessed, email,);
         pic.saveDatas(img);
       }
     } else {
-      final img = Data(counter, points, id, x, email);
+      final img = Data(counter, points, id, x, alreadyGuessed, email,);
       pic.saveDatas(img);
     }
   }
@@ -109,6 +109,8 @@ class _MyAppState extends State<MyApp> {
       if (id == values["uid"]) {
         count = values["counter"];
         x = 10 - count;
+      } else {
+        x = 0;
       }
     });
     return x;

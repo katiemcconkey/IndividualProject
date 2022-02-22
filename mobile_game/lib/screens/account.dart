@@ -23,7 +23,7 @@ class _AccountState extends State<Account> {
   final List _screens = const [
     MyApp(),
     Camera_Screen(),
-    Gallery(alreadyGuessed: []),
+    Gallery(),
     Account(),
     Leader()
   ];

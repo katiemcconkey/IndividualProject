@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -41,11 +40,15 @@ class _ImageScreenState extends State<ImageScreen> {
   var info = {};
   late String id;
   List<Map<String, dynamic>> files = [];
-  List alreadyGuessed = [];
   late bool image = false;
-
+  bool test = false;
   Map<String, List<String>> infos = {};
   DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
+
+  DatabaseReference _ref = FirebaseDatabase.instance.ref("data");
+
+  late String guessed = '';
+  late List<String> alreadyGuessed = [];
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -68,11 +71,25 @@ class _ImageScreenState extends State<ImageScreen> {
     values.forEach((key, values) {
       k = values["name"];
       m = values["wifi"];
-      m.replaceAll("test", '');
       m = m.replaceAll(' ', '');
       wifis = m.split(",");
       infos[k] = wifis;
-      //print(infos);
+    });
+  }
+
+  getAlreadyGuessed() async {
+    inputData();
+    alreadyGuessed = [];
+    guessed = " ";
+    DatabaseEvent event = await _ref.once();
+    dynamic values = event.snapshot.value;
+    values.forEach((key, values) {
+      if (values['uid'] == id) {
+        guessed = values['alreadyGuessed'];
+      }
+
+      guessed = guessed.replaceAll(' ', '');
+      alreadyGuessed = guessed.split(",");
     });
   }
 
@@ -126,17 +143,17 @@ class _ImageScreenState extends State<ImageScreen> {
 
   backToGallery() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => Gallery(
-                  alreadyGuessed: alreadyGuessed,
-                )));
+        context, MaterialPageRoute(builder: (context) => const Gallery()));
   }
 
   checkWifi(String name) async {
+    await getAlreadyGuessed();
     inputData();
     await check();
     await wificheck();
+    DatabaseReference ref = FirebaseDatabase.instance.ref("data");
+    DatabaseEvent event = await ref.once();
+    dynamic values = event.snapshot.value;
     dynamic n;
     dynamic m;
     int i = 0;
@@ -154,14 +171,11 @@ class _ImageScreenState extends State<ImageScreen> {
       }
     });
 
-    //print(wifis.length);
-    //print(i);
-    //print(data);
     final ListResult result =
         await storage.ref().list(const ListOptions(maxResults: 10));
     final List<Reference> allFiles = result.items;
 
-    if (i > (wifis.length * 0.70) && i < (wifis.length * 1.30)) {
+    if (i > (wifis.length * 0.50) && i < (wifis.length * 1.50)) {
       if (points == 0) {
         updatePoints(10);
         updateUploadersPoints(8);
@@ -196,18 +210,29 @@ class _ImageScreenState extends State<ImageScreen> {
       custom = await file.getMetadata();
       if (custom.customMetadata?['uid'] != id) {
         if (image == true) {
-          if (!alreadyGuessed.contains(fileUrl)) {
-            alreadyGuessed.add(fileUrl);
-          }
-          if (alreadyGuessed.contains(fileUrl) &&
-              custom.customMetadata?['uid'] != id) {
-            points = 0;
-            image = false;
-            backToGallery();
+          if (!alreadyGuessed.contains(url)) {
+            test = true;
           }
         }
       }
     });
+    if (test == true) {
+      values.forEach((key, values) {
+        if (values['uid'] == id) {
+          if (!alreadyGuessed.contains(url)) {
+            alreadyGuessed.add(url + ",");
+          }
+          guessed = alreadyGuessed.join(",");
+          print(guessed);
+          if (values["uid"] == id) {
+            ref.child(key).update({"alreadyGuessed": guessed});
+          }
+        }
+      });
+      points = 0;
+      image = false;
+      backToGallery();
+    }
   }
 
   @override

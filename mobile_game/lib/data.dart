@@ -4,20 +4,18 @@ class Data {
   String uid;
   String time;
   String username;
+  String alreadyGuessed;
+  
 
-  Data(
-    this.counter,
-    this.points,
-    this.uid,
-    this.time,
-    this.username
-  );
+  Data(this.counter, this.points, this.uid, this.time, this.alreadyGuessed,
+      this.username,);
 
   Data.fromJson(Map<dynamic, dynamic> json)
       : counter = json['counter'],
         points = json['points'],
         uid = json['uid'],
         time = json['time'],
+        alreadyGuessed = json['alreadyGuessed'],
         username = json['username'];
 
   Map<dynamic, dynamic> toJson() => <dynamic, dynamic>{
@@ -25,6 +23,7 @@ class Data {
         'points': points,
         'uid': uid,
         'time': time,
+        'alreadyGuessed': alreadyGuessed,
         'username': username,
       };
 }

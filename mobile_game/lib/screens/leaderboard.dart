@@ -29,7 +29,7 @@ class _LeaderState extends State<Leader> {
   final List _screens = const [
     MyApp(),
     Camera_Screen(),
-    Gallery(alreadyGuessed: []),
+    Gallery(),
     Account(),
     Leader()
   ];
