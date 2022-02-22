@@ -119,7 +119,6 @@ class _MyAppState extends State<MyApp> {
     data();
     check();
     updateCounter();
-    getCounter();
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(

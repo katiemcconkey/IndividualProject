@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -14,14 +13,17 @@ class _SignUpState extends State<SignUp> {
   String email = '';
   String password = '';
   bool loading = false;
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.indigo[50],
+        backgroundColor: const Color.fromARGB(255, 221, 198, 227),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.black, size:30),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,color: Color.fromARGB(255, 58, 3, 68), size:30),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -30,41 +32,63 @@ class _SignUpState extends State<SignUp> {
           valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
         ),
       )
-      :Form(key: formkey, 
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
+      :Form(
+        key: formkey,
         child: Stack(
-          children: [
-            Container(
-              height: double.infinity,
-              width: double.infinity,
-              color: Colors.indigo[50],
-              child: SingleChildScrollView(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Hero(
-                      tag: '1',
-                      child: Text("Sign up", style: TextStyle(fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(height: 30,),
+                children: [
+                  Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    color: Color.fromARGB(255, 242, 227, 245),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 25, vertical: 120),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Sign Up!",
+                            style: TextStyle(
+                                fontSize: 70,
+                                color: Color.fromARGB(255, 58, 3, 68),
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 30),
+    
+                          SizedBox(
+                            height: 90,
+                            width: 370,
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25)),
+                              child: 
                     TextFormField(keyboardType: TextInputType.emailAddress,
                     onChanged: (value){
                       email=value.toString().trim();
                     },
-                    validator: (value) => (value!.isEmpty)?'Please enter your email address.':null,
+                    validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "Please enter your email address";
+                                  }
+                                },
                     textAlign: TextAlign.center,
                     decoration: const InputDecoration(
+                      hintText: "Email",
                       prefixIcon:  Icon(
                         Icons.email,
                         color: Colors.black,
                       ),
                       ),
-                    ),
+                    ),)),
+                    
                     const SizedBox(height: 30,),
+                    SizedBox(
+                            height: 90,
+                            width: 370,
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25)),
+                              child: 
                     TextFormField(
                       obscureText: true,
                       validator: (value){
@@ -77,13 +101,18 @@ class _SignUpState extends State<SignUp> {
                       },
                       textAlign: TextAlign.center,
                       decoration: const InputDecoration(
+                        hintText: "Password",
                         prefixIcon: Icon(
                           Icons.lock,
                           color: Colors.black,
                         )),
-                    ),
+                    ),)),
                     const SizedBox(height: 80),
+
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                              primary: const Color.fromARGB(255, 58, 3, 68),
+                              onPrimary: Colors.white),
                       child: const Text('Sign up'),
                       onPressed: () async {
                         if(formkey.currentState!.validate()){
@@ -116,7 +145,7 @@ class _SignUpState extends State<SignUp> {
                                       builder: (ctx) => AlertDialog(
                                         title:
                                             const Text('Registration Failed'),
-                                        content: Text('${e.message}'),
+                                        content: Text(e.message.toString()),
                                         actions: [
                                           TextButton(
                                             onPressed: () {
@@ -134,14 +163,10 @@ class _SignUpState extends State<SignUp> {
                                 }
                               },
                             ),
-                          ],
-                        ),
-                      ),
+                    ]
                     )
-                  ],
-                ),
-              ),
-            ),
-    );
+                    )
+                       
+      )])));
   }
 }
