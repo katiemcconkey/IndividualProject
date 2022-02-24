@@ -7,6 +7,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/account.dart';
 import 'package:mobile_game/screens/cameras.dart';
+import 'package:mobile_game/screens/choose.dart';
+import 'package:mobile_game/screens/guess.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import '../homepage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -24,8 +26,8 @@ class Gallery extends StatefulWidget {
 class gallery_state extends State<Gallery> {
   final List _screens = const [
     MyApp(),
-    Camera_Screen(),
-    Gallery(),
+    GuessScreen(),
+    ChooseScreen(),
     Account(),
     Leader()
   ];
@@ -124,27 +126,27 @@ class gallery_state extends State<Gallery> {
                     builder: (context) => (_screens[currentIndex])));
           },
           items: const [
-            BottomNavigationBarItem(
-              label: "homepage",
-              icon: Icon(Icons.home),
-            ),
-            BottomNavigationBarItem(
-              label: "upload image",
-              icon: Icon(Icons.camera),
-            ),
-            BottomNavigationBarItem(
-              label: "view gallery",
-              icon: Icon(Icons.burst_mode_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: "view account",
-              icon: Icon(Icons.account_circle_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: "leaderboard",
-              icon: Icon(Icons.leaderboard_outlined),
-            ),
-          ],
+          BottomNavigationBarItem(
+            label: "homepage",
+            icon: Icon(Icons.home),
+          ),
+          BottomNavigationBarItem(
+            label: "upload item",
+            icon: Icon(Icons.camera),
+          ),
+          BottomNavigationBarItem(
+            label: "guess location",
+            icon: Icon(Icons.burst_mode_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: "view account",
+            icon: Icon(Icons.account_circle_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: "leaderboard",
+            icon: Icon(Icons.leaderboard_outlined),
+          ),
+        ],
         ),
         body: Padding(
             padding: const EdgeInsets.all(8.0),

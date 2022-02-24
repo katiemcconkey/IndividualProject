@@ -5,10 +5,15 @@ class Data {
   String time;
   String username;
   String alreadyGuessed;
-  
 
-  Data(this.counter, this.points, this.uid, this.time, this.alreadyGuessed,
-      this.username,);
+  Data(
+    this.counter,
+    this.points,
+    this.uid,
+    this.time,
+    this.alreadyGuessed,
+    this.username,
+  );
 
   Data.fromJson(Map<dynamic, dynamic> json)
       : counter = json['counter'],

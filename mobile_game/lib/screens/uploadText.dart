@@ -1,47 +1,30 @@
-// ignore_for_file: camel_case_types
-
-import 'dart:io';
-import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:mobile_game/screens/account.dart';
+import 'package:flutter/services.dart';
+import 'package:mobile_game/homepage.dart';
+import 'package:mobile_game/photo.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/guess.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'package:mobile_game/screens/photo_gallery.dart';
-import 'package:path/path.dart' as path;
+import 'package:mobile_game/text.dart';
 import 'package:wifi_iot/wifi_iot.dart';
-import 'package:firebase_database/firebase_database.dart';
-import '../homepage.dart';
-import '../photo.dart';
-import '../dao.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
 
-class Camera_Screen extends StatefulWidget {
-  const Camera_Screen({Key? key}) : super(key: key);
+import '../dao.dart';
+import 'account.dart';
+
+class TextScreen extends StatefulWidget {
+  const TextScreen({Key? key}) : super(key: key);
 
   @override
-  _camera_screenState createState() => _camera_screenState();
+  _TextScreenState createState() => _TextScreenState();
 }
 
-class _camera_screenState extends State<Camera_Screen> {
+class _TextScreenState extends State<TextScreen> {
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  final control = TextEditingController();
   final pic = Dao();
-  final ImagePicker _picker = ImagePicker();
-  FirebaseStorage storage = FirebaseStorage.instance;
-  late File imageFile;
-  late List<Image> imgs = [];
-  late String name;
-  late List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
-  final db = FirebaseDatabase.instance;
-  late String wifi = "";
-  late String id;
-  int i = 0;
-  int counter = 0;
-  late String data;
-  late List<String> bssids = [];
-  var f = DateFormat("yyyyMMdd");
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -49,8 +32,16 @@ class _camera_screenState extends State<Camera_Screen> {
     Account(),
     Leader()
   ];
-
-  List<String> files = [];
+  DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
+  late String id;
+  late List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
+  int i = 0;
+  int counter = 0;
+  late String data;
+  late List<String> bssids = [];
+  late String wifi = "";
+  late String hint = "";
+  late List<String> inputs = [];
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   void inputData() {
@@ -104,40 +95,15 @@ class _camera_screenState extends State<Camera_Screen> {
     });
   }
 
-  _getCamera() async {
-    bssids = [];
-    wifis();
-    String y = f.format(DateTime.now()).toString();
-    XFile? image =
-        await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      imageFile = File(image!.path);
-      imgs.add(Image.file(imageFile));
-      files.add(image.path);
-      name = path.basename(image.path);
-    });
-    if (wifi != "") {
-      final img = photo(name, wifi, id);
-      pic.saveData(img);
-
-      try {
-        updateCounter();
-        await storage.ref(name).putFile(imageFile,
-            SettableMetadata(customMetadata: {'uid': id, 'time': y}));
-        setState(() {});
-      } on FirebaseException catch (error) {
-        // ignore: avoid_print
-        print(error);
-      }
-      i++;
-    } else {
-      printAlert("There is no detectable wifi near you");
-    }
+  @override
+  dispose() {
+    control.dispose();
+    super.dispose();
   }
 
   counterLimit() async {
     inputData();
-    //if counter > 9 then remove camera functionality
+    wifis();
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
@@ -145,7 +111,21 @@ class _camera_screenState extends State<Camera_Screen> {
       if (values["uid"] == id) {
         int x = values["counter"];
         if (x < 10) {
-          _getCamera();
+          if (wifi != "" && control.text != "") {
+            final img = locationText(wifi, id, control.text);
+            pic.SaveData(img);
+            try {
+              updateCounter();
+              control.clear();
+              setState(() {});
+            } on FirebaseException catch (error) {
+              // ignore: avoid_print
+              print(error);
+            }
+            i++;
+          } else {
+            printAlert("There is no detectable wifi near you");
+          }
         } else {
           printAlert("You can only upload 10 items a day");
         }
@@ -199,36 +179,60 @@ class _camera_screenState extends State<Camera_Screen> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          children: [
-            const Card(
-                margin: EdgeInsets.all(20.0),
-                borderOnForeground: false,
-                elevation: 0.0,
-                child: Text(
-                  "Scroll to view the image you just uploaded : ",
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 58, 3, 68),
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold),
-                )),
-            SizedBox(
-              height: 400,
-              width: 350,
-              child: ListView.builder(
-                itemCount: imgs.length,
-                itemBuilder: (context, i) => Column(children: [
-                  imgs[i],
-                  const Divider(
-                    height: 2.0,
-                  )
-                ]),
+      body: Form(
+          key: formkey,
+          child: Stack(children: [
+            Container(
+              height: double.infinity,
+              width: double.infinity,
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Card(
+                        margin: EdgeInsets.all(10.0),
+                        borderOnForeground: false,
+                        elevation: 0.0,
+                        child: Text(
+                          "Scroll to view the text you just uploaded : ",
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 58, 3, 68),
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold),
+                        )),
+                    SizedBox(
+                        height: 90,
+                        width: 370,
+                        child: Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25)),
+                            child: TextFormField(
+                              controller: control,
+                              keyboardType: TextInputType.text,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Please enter your a hint for your location";
+                                } else {
+                                  hint = value;
+                                  print(hint);
+                                }
+                              },
+                              textAlign: TextAlign.center,
+                              decoration: const InputDecoration(
+                                  hintText: 'Where are you?',
+                                  prefixIcon: Icon(
+                                    Icons.question_answer_rounded,
+                                    color: Color.fromARGB(255, 58, 3, 68),
+                                  )),
+                            ))),
+                    const SizedBox(height: 80),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            )
+          ])),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       floatingActionButton: FloatingActionButton(

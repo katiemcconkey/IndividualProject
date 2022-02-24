@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_game/main.dart';
 import 'package:mobile_game/screens/cameras.dart';
+import 'package:mobile_game/screens/choose.dart';
+import 'package:mobile_game/screens/guess.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'package:mobile_game/screens/photo_gallery.dart';
 import '../homepage.dart';
@@ -22,8 +24,8 @@ class _AccountState extends State<Account> {
 
   final List _screens = const [
     MyApp(),
-    Camera_Screen(),
-    Gallery(),
+    GuessScreen(),
+    ChooseScreen(),
     Account(),
     Leader()
   ];
@@ -77,11 +79,11 @@ class _AccountState extends State<Account> {
             icon: Icon(Icons.home),
           ),
           BottomNavigationBarItem(
-            label: "upload image",
+            label: "upload item",
             icon: Icon(Icons.camera),
           ),
           BottomNavigationBarItem(
-            label: "view gallery",
+            label: "guess location",
             icon: Icon(Icons.burst_mode_outlined),
           ),
           BottomNavigationBarItem(

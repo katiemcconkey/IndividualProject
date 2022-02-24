@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/account.dart';
 import 'package:mobile_game/screens/cameras.dart';
+import 'package:mobile_game/screens/choose.dart';
+import 'package:mobile_game/screens/guess.dart';
 import 'package:mobile_game/screens/photo_gallery.dart';
 
 import '../homepage.dart';
@@ -28,8 +30,8 @@ class _LeaderState extends State<Leader> {
   late String username;
   final List _screens = const [
     MyApp(),
-    Camera_Screen(),
-    Gallery(),
+    GuessScreen(),
+    ChooseScreen(),
     Account(),
     Leader()
   ];
@@ -118,29 +120,30 @@ class _LeaderState extends State<Leader> {
                         builder: (context) => (_screens[currentIndex])));
               },
               items: const [
-                BottomNavigationBarItem(
-                  label: "homepage",
-                  icon: Icon(Icons.home),
-                ),
-                BottomNavigationBarItem(
-                  label: "upload image",
-                  icon: Icon(Icons.camera),
-                ),
-                BottomNavigationBarItem(
-                  label: "view gallery",
-                  icon: Icon(Icons.burst_mode_outlined),
-                ),
-                BottomNavigationBarItem(
-                  label: "view account",
-                  icon: Icon(Icons.account_circle_outlined),
-                ),
-                BottomNavigationBarItem(
-                  label: "leaderboard",
-                  icon: Icon(Icons.leaderboard_outlined),
-                ),
-              ],
+          BottomNavigationBarItem(
+            label: "homepage",
+            icon: Icon(Icons.home),
+          ),
+          BottomNavigationBarItem(
+            label: "upload item",
+            icon: Icon(Icons.camera),
+          ),
+          BottomNavigationBarItem(
+            label: "guess location",
+            icon: Icon(Icons.burst_mode_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: "view account",
+            icon: Icon(Icons.account_circle_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: "leaderboard",
+            icon: Icon(Icons.leaderboard_outlined),
+          ),
+        ],
             ),
-            body: Padding(
+            body: 
+          Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
@@ -159,13 +162,14 @@ class _LeaderState extends State<Leader> {
                                     ));
                               } else {
                                 return Center(
+                                  child: SingleChildScrollView(
                                     child: Column(
                                         children: List.generate(
                                   nums.length,
                                   (index) => Row(
                                     children: <Widget>[
                                       SizedBox(
-                                          height: 90,
+                                          height: 70,
                                           width: 370,
                                           child: Card(
                                               shape: RoundedRectangleBorder(
@@ -173,7 +177,7 @@ class _LeaderState extends State<Leader> {
                                                       BorderRadius.circular(
                                                           25)),
                                               margin:
-                                                  const EdgeInsets.all(15.0),
+                                                  const EdgeInsets.all(8.0),
                                               borderOnForeground: true,
                                               elevation: 20.0,
                                               child: Row(
@@ -202,18 +206,14 @@ class _LeaderState extends State<Leader> {
                                                     borderOnForeground: false,
                                                     elevation: 0.0,
                                                     child: Text(
-                                                      sortedMap.keys
-                                                          .firstWhere((n) =>
-                                                              sortedMap[n] ==
-                                                              nums[index])
-                                                          .toString(),
+                                                      sortedMap.keys.elementAt(index).toString(),
                                                     ),
                                                   )
                                                 ],
                                               )))
                                     ],
                                   ),
-                                )));
+                                ))));
                               }
                             })),
                   ],

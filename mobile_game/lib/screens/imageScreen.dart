@@ -66,6 +66,9 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   check() async {
+    wifis = [];
+    m = '';
+    infos = {};
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
     values.forEach((key, values) {
@@ -157,25 +160,25 @@ class _ImageScreenState extends State<ImageScreen> {
     dynamic n;
     dynamic m;
     int i = 0;
+    int size = 0;
     late String fileUrl;
     late FullMetadata custom;
     infos.forEach((key, value) {
       if (key == name) {
+        size = value.length;
         for (n in value) {
-          for (m in data) {
-            if (n == m) {
+          //for (m in data) {
+            if (data.contains(n)) {
               i++;
             }
           }
-        }
       }
     });
 
     final ListResult result =
         await storage.ref().list(const ListOptions(maxResults: 10));
     final List<Reference> allFiles = result.items;
-
-    if (i > (wifis.length * 0.50) && i < (wifis.length * 1.50)) {
+    if (i > (size * 0.70) && i < (size * 1.30)) {
       if (points == 0) {
         updatePoints(10);
         updateUploadersPoints(8);
@@ -195,13 +198,22 @@ class _ImageScreenState extends State<ImageScreen> {
     } else {
       points += 1;
       if (points == 1) {
-        printAlert("You have 2 tries left");
+        printAlert("You have 2 tries left, you only matched " +
+            i.toString() +
+            " out of " +
+            size.toString());
       }
       if (points == 2) {
-        printAlert("You have 1 try left");
+        printAlert("You have 1 try left, you only matched " +
+            i.toString() +
+            " out of " +
+            size.toString());
       }
       if (points >= 3) {
-        printAlert("Out of tries, no points.");
+        printAlert("Out of tries, no points, you only matched " +
+            i.toString() +
+            " out of " +
+            size.toString());
         image = true;
       }
     }
@@ -223,7 +235,6 @@ class _ImageScreenState extends State<ImageScreen> {
             alreadyGuessed.add(url + ",");
           }
           guessed = alreadyGuessed.join(",");
-          print(guessed);
           if (values["uid"] == id) {
             ref.child(key).update({"alreadyGuessed": guessed});
           }
