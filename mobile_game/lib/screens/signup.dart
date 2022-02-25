@@ -39,7 +39,7 @@ class _SignUpState extends State<SignUp> {
                   Container(
                     height: double.infinity,
                     width: double.infinity,
-                    color: Color.fromARGB(255, 242, 227, 245),
+                    color: const Color.fromARGB(255, 242, 227, 245),
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 25, vertical: 120),

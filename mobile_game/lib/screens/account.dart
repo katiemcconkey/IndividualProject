@@ -1,11 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_game/main.dart';
-import 'package:mobile_game/screens/uploadImage.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
-import 'package:mobile_game/screens/photo_gallery.dart';
 import 'homepage.dart';
 
 class Account extends StatefulWidget {

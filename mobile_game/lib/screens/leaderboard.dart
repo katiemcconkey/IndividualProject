@@ -2,10 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/account.dart';
-import 'package:mobile_game/screens/uploadImage.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/upload.dart';
-import 'package:mobile_game/screens/photo_gallery.dart';
 
 import 'homepage.dart';
 

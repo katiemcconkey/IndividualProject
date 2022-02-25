@@ -8,7 +8,7 @@ class Dao {
   late String data;
   final DatabaseReference _ref = FirebaseDatabase.instance.ref().child('photos');
   final DatabaseReference ref = FirebaseDatabase.instance.ref().child('data');
-  final DatabaseReference Ref = FirebaseDatabase.instance.ref().child('locationText');
+  final DatabaseReference reference = FirebaseDatabase.instance.ref().child('locationText');
 
   void saveData(photo photo) {
     _ref.push().set(photo.toJson());
@@ -18,7 +18,7 @@ class Dao {
     ref.push().set(data.toJson());
   }
 
-  void SaveData(locationText locationText) {
-    Ref.push().set(locationText.toJson());
+  void savedata(LocationText locationText) {
+    reference.push().set(locationText.toJson());
   }
 }

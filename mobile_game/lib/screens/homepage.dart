@@ -2,11 +2,9 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_game/screens/uploadImage.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
-import 'package:mobile_game/screens/photo_gallery.dart';
 import '../database/dao.dart';
 import '../database/data.dart';
 import 'account.dart';
@@ -207,7 +205,7 @@ class _MyAppState extends State<MyApp> {
                                   elevation: 0.0,
                                   //color: Color.fromARGB(255, 203, 162, 211),
                                   child: Text(
-                                    "Take and receive up to 10 images a day. When you receive a new image, go and find where you think this image was taken and allow the app to check if you're in the correct location using wifi. You recieve points for guessing the correct location as well as others guessing your image correctly.",
+                                    "Take and receive up to 10 items per day. When you receive a new item, go and find where you think this was taken and allow the app to check if you're in the correct location. You recieve points for guessing the correct location as well as others guessing your item's location correctly.",
                                     style: TextStyle(
                                         color: Color.fromARGB(255, 58, 3, 68),
                                         fontSize: 17,
@@ -243,13 +241,13 @@ class _MyAppState extends State<MyApp> {
                                   elevation: 0.0,
                                   child: ElevatedButton(
                                     child: const Text(
-                                        "Click here to upload an image"),
+                                        "Click here to upload an item"),
                                     onPressed: () => {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  const Camera_Screen()))
+                                                  const GuessScreen()))
                                     },
                                     style: ElevatedButton.styleFrom(
                                         primary: const Color.fromARGB(

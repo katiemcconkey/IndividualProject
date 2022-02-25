@@ -1,7 +1,5 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_game/screens/homepage.dart';
@@ -58,7 +56,7 @@ class _LoginState extends State<Login> {
                   Container(
                     height: double.infinity,
                     width: double.infinity,
-                    color: Color.fromARGB(255, 242, 227, 245),
+                    color: const Color.fromARGB(255, 242, 227, 245),
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 25, vertical: 120),
@@ -175,31 +173,29 @@ class _LoginState extends State<Login> {
                             },
                           ),
                           const SizedBox(height: 10),
-                          Container(
-                            child: Row(
-                              children: [
-                                const Text(
-                                  "Don't have an Account ?",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      color: Color.fromARGB(255, 58, 3, 68)),
-                                ),
-                                const SizedBox(width: 10),
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        primary: const Color.fromARGB(
-                                            255, 58, 3, 68),
-                                        onPrimary: Colors.white),
-                                    child: const Text('Sign up'),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const SignUp()));
-                                    })
-                              ],
-                            ),
+                          Row(
+                            children: [
+                              const Text(
+                                "Don't have an Account ?",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Color.fromARGB(255, 58, 3, 68)),
+                              ),
+                              const SizedBox(width: 10),
+                              ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      primary: const Color.fromARGB(
+                                          255, 58, 3, 68),
+                                      onPrimary: Colors.white),
+                                  child: const Text('Sign up'),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const SignUp()));
+                                  })
+                            ],
                           )
                         ],
                       ),

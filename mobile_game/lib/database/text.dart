@@ -1,11 +1,11 @@
 
-class locationText {
+class LocationText {
   String wifi;
   String uid;
   String text;
-  locationText(this.wifi, this.uid, this.text);
+  LocationText(this.wifi, this.uid, this.text);
 
-  locationText.fromJson(Map<dynamic, dynamic> json)
+  LocationText.fromJson(Map<dynamic, dynamic> json)
       :
         wifi = json['wifi'],
         uid = json['uid'],

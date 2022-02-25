@@ -45,7 +45,7 @@ class _ImageScreenState extends State<ImageScreen> {
   Map<String, List<String>> infos = {};
   DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
 
-  DatabaseReference _ref = FirebaseDatabase.instance.ref("data");
+  final DatabaseReference _ref = FirebaseDatabase.instance.ref("data");
 
   late String guessed = '';
   late List<String> alreadyGuessed = [];
@@ -169,16 +169,13 @@ class _ImageScreenState extends State<ImageScreen> {
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
     dynamic n;
-    dynamic m;
     int i = 0;
     int size = 0;
-    late String fileUrl;
     late FullMetadata custom;
     infos.forEach((key, value) {
       if (key == name) {
         size = value.length;
         for (n in value) {
-          //for (m in data) {
           if (data.contains(n)) {
             i++;
           }
@@ -246,7 +243,6 @@ class _ImageScreenState extends State<ImageScreen> {
       }
     }
     await Future.forEach<Reference>(allFiles, (file) async {
-      fileUrl = await file.getDownloadURL();
       custom = await file.getMetadata();
       if (custom.customMetadata?['uid'] != id) {
         if (image == true) {

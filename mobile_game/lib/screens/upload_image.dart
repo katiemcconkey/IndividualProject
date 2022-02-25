@@ -9,7 +9,6 @@ import 'package:mobile_game/screens/account.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
-import 'package:mobile_game/screens/photo_gallery.dart';
 import 'package:path/path.dart' as path;
 import 'package:wifi_iot/wifi_iot.dart';
 import 'package:firebase_database/firebase_database.dart';

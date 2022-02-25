@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/account.dart';
-import 'package:mobile_game/screens/uploadImage.dart';
+import 'package:mobile_game/screens/upload_image.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
-import 'package:mobile_game/screens/photo_gallery.dart';
-import 'package:mobile_game/screens/uploadText.dart';
+import 'package:mobile_game/screens/upload_text.dart';
 
 import 'homepage.dart';
 

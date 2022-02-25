@@ -6,14 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/account.dart';
-import 'package:mobile_game/screens/uploadImage.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'homepage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
-import 'guessImage.dart';
+import 'guess_image.dart';
 
 class Gallery extends StatefulWidget {
   const Gallery({Key? key}) : super(key: key);
@@ -41,7 +40,7 @@ class gallery_state extends State<Gallery> {
 
   Map<String, List<String>> infos = {};
   DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
-  DatabaseReference _ref = FirebaseDatabase.instance.ref("data");
+  final DatabaseReference _ref = FirebaseDatabase.instance.ref("data");
 
   late String guessed = '';
   late List<String> alreadyGuessed = [];
@@ -83,8 +82,6 @@ class gallery_state extends State<Gallery> {
 
   Future<List<Map<String, dynamic>>> _loadImages() async {
     await getAlreadyGuessed();
-    DatabaseEvent event = await ref.once();
-    dynamic values = event.snapshot.value;
     final ListResult result =
         await storage.ref().list(const ListOptions(maxResults: 10));
     final List<Reference> allFiles = result.items;

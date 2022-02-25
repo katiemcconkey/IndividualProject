@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/account.dart';
-import 'package:mobile_game/screens/uploadImage.dart';
-import 'package:mobile_game/screens/guessText.dart';
+import 'package:mobile_game/screens/guess_text.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'package:mobile_game/screens/photo_gallery.dart';
-import 'package:mobile_game/screens/uploadText.dart';
 
 import 'homepage.dart';
 import 'upload.dart';

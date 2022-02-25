@@ -2,13 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_game/database/text.dart';
 import 'package:mobile_game/screens/homepage.dart';
-import 'package:mobile_game/database/photo.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
-import 'package:mobile_game/screens/photo_gallery.dart';
-import 'package:mobile_game/database/text.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 
 import '../database/dao.dart';
@@ -112,8 +110,8 @@ class _TextScreenState extends State<TextScreen> {
         int x = values["counter"];
         if (x < 10) {
           if (wifi != "" && control.text != "") {
-            final img = locationText(wifi, id, control.text);
-            pic.SaveData(img);
+            final img = LocationText(wifi, id, control.text);
+            pic.savedata(img);
             try {
               updateCounter();
               control.clear();
@@ -182,7 +180,7 @@ class _TextScreenState extends State<TextScreen> {
       body: Form(
           key: formkey,
           child: Stack(children: [
-            Container(
+            SizedBox(
               height: double.infinity,
               width: double.infinity,
               child: SingleChildScrollView(
@@ -216,7 +214,6 @@ class _TextScreenState extends State<TextScreen> {
                                   return "Please enter your a hint for your location";
                                 } else {
                                   hint = value;
-                                  print(hint);
                                 }
                               },
                               textAlign: TextAlign.center,
