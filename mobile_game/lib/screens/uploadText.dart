@@ -2,16 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile_game/homepage.dart';
-import 'package:mobile_game/photo.dart';
+import 'package:mobile_game/screens/homepage.dart';
+import 'package:mobile_game/database/photo.dart';
 import 'package:mobile_game/screens/choose.dart';
-import 'package:mobile_game/screens/guess.dart';
+import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'package:mobile_game/screens/photo_gallery.dart';
-import 'package:mobile_game/text.dart';
+import 'package:mobile_game/database/text.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 
-import '../dao.dart';
+import '../database/dao.dart';
 import 'account.dart';
 
 class TextScreen extends StatefulWidget {

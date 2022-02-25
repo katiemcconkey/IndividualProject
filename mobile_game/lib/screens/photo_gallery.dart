@@ -6,14 +6,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/account.dart';
-import 'package:mobile_game/screens/cameras.dart';
+import 'package:mobile_game/screens/uploadImage.dart';
 import 'package:mobile_game/screens/choose.dart';
-import 'package:mobile_game/screens/guess.dart';
+import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
-import '../homepage.dart';
+import 'homepage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
-import 'imageScreen.dart';
+import 'guessImage.dart';
 
 class Gallery extends StatefulWidget {
   const Gallery({Key? key}) : super(key: key);

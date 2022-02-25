@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:mobile_game/screens/photo_gallery.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 
-import '../dao.dart';
+import '../database/dao.dart';
 
 class ImageScreen extends StatefulWidget {
   final String path;
@@ -137,11 +137,20 @@ class _ImageScreenState extends State<ImageScreen> {
     });
   }
 
-  printAlert(String message) {
-    showDialog(
+  printAlert(String message, int i ) {
+    if( i == 0){
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+            title: const Text("Location Check"), content: Text(message + "You're probably in the wrong location")));
+    }
+    else{
+      showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
             title: const Text("Location Check"), content: Text(message)));
+    }
+    
   }
 
   backToGallery() {
@@ -150,6 +159,8 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   checkWifi(String name) async {
+    double x = 0;
+    double y = 0;
     await getAlreadyGuessed();
     inputData();
     await check();
@@ -168,31 +179,48 @@ class _ImageScreenState extends State<ImageScreen> {
         size = value.length;
         for (n in value) {
           //for (m in data) {
-            if (data.contains(n)) {
-              i++;
-            }
+          if (data.contains(n)) {
+            i++;
           }
+        }
       }
     });
 
     final ListResult result =
         await storage.ref().list(const ListOptions(maxResults: 10));
     final List<Reference> allFiles = result.items;
-    if (i > (size * 0.70) && i < (size * 1.30)) {
+
+    if (size > 200) {
+      x = 0.3;
+      y = 1.7;
+    } else if (size < 199 && size > 150) {
+      x = 0.4;
+      y = 1.6;
+    } else if (size < 149 && size > 100) {
+      x = 0.5;
+      y = 1.5;
+    } else if (size < 99 && size > 50) {
+      x = 0.6;
+      y = 1.4;
+    } else {
+      x = 0.7;
+      y = 1.3;
+    }
+    if (i > (size * x) && i < (size * y)) {
       if (points == 0) {
         updatePoints(10);
         updateUploadersPoints(8);
-        printAlert("You got it first try, 10 points added");
+        printAlert("You got it first try, 10 points added", i);
         image = true;
       } else if (points == 1) {
         updatePoints(5);
         updateUploadersPoints(4);
-        printAlert("Second try! 5 points added");
+        printAlert("Second try! 5 points added", i);
         image = true;
       } else if (points == 2) {
         updatePoints(2);
         updateUploadersPoints(2);
-        printAlert("Third try! Well done");
+        printAlert("Third try! Well done", i);
         image = true;
       }
     } else {
@@ -201,19 +229,19 @@ class _ImageScreenState extends State<ImageScreen> {
         printAlert("You have 2 tries left, you only matched " +
             i.toString() +
             " out of " +
-            size.toString());
+            size.toString(), i);
       }
       if (points == 2) {
         printAlert("You have 1 try left, you only matched " +
             i.toString() +
             " out of " +
-            size.toString());
+            size.toString(), i);
       }
       if (points >= 3) {
         printAlert("Out of tries, no points, you only matched " +
             i.toString() +
             " out of " +
-            size.toString());
+            size.toString(), i);
         image = true;
       }
     }

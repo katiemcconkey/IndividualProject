@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/account.dart';
-import 'package:mobile_game/screens/cameras.dart';
+import 'package:mobile_game/screens/uploadImage.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'package:mobile_game/screens/photo_gallery.dart';
 import 'package:mobile_game/screens/uploadText.dart';
 
-import '../homepage.dart';
+import 'homepage.dart';
 
 class GuessScreen extends StatefulWidget {
   const GuessScreen({Key? key}) : super(key: key);
@@ -100,7 +100,7 @@ class _GuessScreenState extends State<GuessScreen> {
                                   elevation: 0.0,
                                   child: ElevatedButton(
                                     child: const Text(
-                                        "upload text"),
+                                        "Upload text"),
                                     onPressed: () => {
                                       Navigator.push(
                                           context,

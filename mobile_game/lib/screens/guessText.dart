@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile_game/homepage.dart';
+import 'package:mobile_game/screens/homepage.dart';
 import 'package:mobile_game/screens/account.dart';
 import 'package:mobile_game/screens/choose.dart';
-import 'package:mobile_game/screens/guess.dart';
+import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 
@@ -62,15 +62,22 @@ class _GuessTextState extends State<GuessText> {
     });
   }
 
-  updateUploadersPoints(int i, String text) async {
+  updateUploadersPoints(int i, String guess) async {
     inputData();
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
+    DatabaseReference _ref = FirebaseDatabase.instance.ref("locationText");
+    DatabaseEvent _event = await _ref.once();
+    dynamic _values = _event.snapshot.value;
     values.forEach((key, values) {
-      if (values["uid"] != id && values["text"] == text) {
-        int x = values["points"];
-        ref.child(key).update({"points": x + i});
+      if (values["uid"] != id) {
+        _values.forEach((key, _values) {
+          if (_values["uid"] == values["uid"] && _values["text"] == guess) {
+            int x = values["points"];
+            ref.child(key).update({"points": x + i});
+          }
+        });
       }
     });
   }
@@ -148,6 +155,8 @@ class _GuessTextState extends State<GuessText> {
   checkWifi(String guess) async {
     await wificheck();
     await _getText();
+    double x = 0;
+    double y = 0;
     k = 0;
     bool test = false;
     int size = 0;
@@ -163,8 +172,24 @@ class _GuessTextState extends State<GuessText> {
         }
       }
     });
+    if (size > 200) {
+      x = 0.3;
+      y = 1.7;
+    } else if (size < 199 && size > 150) {
+      x = 0.4;
+      y = 1.6;
+    } else if (size < 149 && size > 100) {
+      x = 0.5;
+      y = 1.5;
+    } else if (size < 99 && size > 50) {
+      x = 0.6;
+      y = 1.4;
+    } else {
+      x = 0.7;
+      y = 1.3;
+    }
 
-    if (k > (size * 0.70) && k < (size * 1.30)) {
+    if (k > (size * x) && k < (size * y)) {
       if (points == 0) {
         updatePoints(10);
         updateUploadersPoints(8, guess);

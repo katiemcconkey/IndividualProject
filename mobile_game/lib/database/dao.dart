@@ -1,5 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:mobile_game/text.dart';
+import 'package:mobile_game/database/text.dart';
 import 'photo.dart';
 import 'data.dart';
 import 'text.dart';
