@@ -60,8 +60,9 @@ class _TextScreenState extends State<TextScreen> {
     //print(_wifiNetworks.length);
     await getListOfWifis();
     //print(_wifiNetworks.length);
+    bssids = [];
     for (var b in _wifiNetworks) {
-      if (b.level! > -80 && !bssids.contains(b.bssid.toString())) {
+      if (b.level! > -75 && !bssids.contains(b.bssid.toString())) {
         //print(b.bssid.toString());
         bssids.add(b.bssid.toString() + ",");
         //(wifi + b.bssid.toString() + ",");

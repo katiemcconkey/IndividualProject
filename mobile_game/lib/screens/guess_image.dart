@@ -25,7 +25,7 @@ class _ImageScreenState extends State<ImageScreen> {
   _ImageScreenState(this.path, this.url);
   int points = 0;
   final pic = Dao();
-  late int i;
+  int i = 0;
   List<String> wifis = [];
   late List<String> data = [];
   final db = FirebaseDatabase.instance;
@@ -76,6 +76,8 @@ class _ImageScreenState extends State<ImageScreen> {
       m = values["wifi"];
       m = m.replaceAll(' ', '');
       wifis = m.split(",");
+      wifis.remove(" ");
+      wifis.remove("");
       infos[k] = wifis;
     });
   }
@@ -100,7 +102,7 @@ class _ImageScreenState extends State<ImageScreen> {
     await getListOfWifis();
     data = [];
     for (var b in _wifiNetworks) {
-      if (b.level! > -80) {
+      if (b.level! > -75) {
         data.add(b.bssid.toString());
       }
     }
@@ -124,33 +126,40 @@ class _ImageScreenState extends State<ImageScreen> {
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
+    DatabaseReference _ref = FirebaseDatabase.instance.ref("photo");
+    DatabaseEvent _event = await ref.once();
+    dynamic _values = event.snapshot.value;
     final ListResult result = await storage.ref().list();
     final List<Reference> allFiles = result.items;
     await Future.forEach<Reference>(allFiles, (file) async {
       final FullMetadata custom = await file.getMetadata();
-      values.forEach((key, values) {
-        if (values["uid"] == custom.customMetadata?['uid']) {
-          int x = values["points"];
-          ref.child(key).update({"points": x + i});
-        }
+      _values.forEach((key, values) {
+        values.forEach((key, values) {
+          if (values["uid"] == custom.customMetadata?['uid']) {
+            if (path == _values['name']) {
+              int x = values["points"];
+              ref.child(key).update({"points": x + i});
+            }
+          }
+        });
       });
     });
   }
 
-  printAlert(String message, int i ) {
-    if( i == 0){
+  printAlert(String message, int i) {
+    if (i == 0) {
       showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-            title: const Text("Location Check"), content: Text(message + "You're probably in the wrong location")));
-    }
-    else{
+          context: context,
+          builder: (ctx) => AlertDialog(
+              title: const Text("Location Check"),
+              content:
+                  Text(message + ", You're probably in the wrong location")));
+    } else {
       showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-            title: const Text("Location Check"), content: Text(message)));
+          context: context,
+          builder: (ctx) => AlertDialog(
+              title: const Text("Location Check"), content: Text(message)));
     }
-    
   }
 
   backToGallery() {
@@ -165,17 +174,18 @@ class _ImageScreenState extends State<ImageScreen> {
     inputData();
     await check();
     await wificheck();
+    final ListResult result = await storage.ref().list();
+    final List<Reference> allFiles = result.items;
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
-    dynamic n;
-    int i = 0;
+    i = 0;
     int size = 0;
     late FullMetadata custom;
     infos.forEach((key, value) {
       if (key == name) {
         size = value.length;
-        for (n in value) {
+        for (var n in value) {
           if (data.contains(n)) {
             i++;
           }
@@ -183,17 +193,16 @@ class _ImageScreenState extends State<ImageScreen> {
       }
     });
 
-    final ListResult result =
-        await storage.ref().list(const ListOptions(maxResults: 10));
-    final List<Reference> allFiles = result.items;
-
-    if (size > 200) {
+    if (size > 400) {
+      x = 0.2;
+      y = 1.8;
+    } else if (size > 200 && size < 399) {
       x = 0.3;
       y = 1.7;
-    } else if (size < 199 && size > 150) {
+    } else if ((size < 199 && size > 150)) {
       x = 0.4;
       y = 1.6;
-    } else if (size < 149 && size > 100) {
+    } else if ((size < 149 && size > 100) || (size > 0 && size < 5)) {
       x = 0.5;
       y = 1.5;
     } else if (size < 99 && size > 50) {
@@ -203,43 +212,62 @@ class _ImageScreenState extends State<ImageScreen> {
       x = 0.7;
       y = 1.3;
     }
-    if (i > (size * x) && i < (size * y)) {
-      if (points == 0) {
-        updatePoints(10);
-        updateUploadersPoints(8);
-        printAlert("You got it first try, 10 points added", i);
-        image = true;
-      } else if (points == 1) {
-        updatePoints(5);
-        updateUploadersPoints(4);
-        printAlert("Second try! 5 points added", i);
-        image = true;
-      } else if (points == 2) {
-        updatePoints(2);
-        updateUploadersPoints(2);
-        printAlert("Third try! Well done", i);
-        image = true;
-      }
+    if (i == 0) {
+      printAlert("Please try somewhere else", i);
     } else {
-      points += 1;
-      if (points == 1) {
-        printAlert("You have 2 tries left, you only matched " +
-            i.toString() +
-            " out of " +
-            size.toString(), i);
-      }
-      if (points == 2) {
-        printAlert("You have 1 try left, you only matched " +
-            i.toString() +
-            " out of " +
-            size.toString(), i);
-      }
-      if (points >= 3) {
-        printAlert("Out of tries, no points, you only matched " +
-            i.toString() +
-            " out of " +
-            size.toString(), i);
-        image = true;
+      if (i > (size * x) && i < (size * y)) {
+        if (points == 0) {
+          updatePoints(10);
+          updateUploadersPoints(8);
+          printAlert("You got it first try, 10 points added", i);
+          image = true;
+        } else if (points == 1) {
+          updatePoints(5);
+          updateUploadersPoints(4);
+          printAlert("Second try! 5 points added", i);
+          image = true;
+        } else if (points == 2) {
+          updatePoints(2);
+          updateUploadersPoints(2);
+          printAlert("Third try! Well done", i);
+          image = true;
+        }
+      } else {
+        points += 1;
+        if (points == 1) {
+          printAlert(
+              "You have 2 tries left, you only matched " +
+                  i.toString() +
+                  " out of " +
+                  size.toString() +
+                  " and scanned " +
+                  data.length.toString() +
+                  " wifi networks",
+              i);
+        }
+        if (points == 2) {
+          printAlert(
+              "You have 1 try left, you only matched " +
+                  i.toString() +
+                  " out of " +
+                  size.toString() +
+                  " and scanned " +
+                  data.length.toString() +
+                  " wifi networks",
+              i);
+        }
+        if (points >= 3) {
+          printAlert(
+              "Out of tries, no points, you only matched " +
+                  i.toString() +
+                  " out of " +
+                  size.toString() +
+                  " and scanned " +
+                  data.length.toString() +
+                  " wifi networks",
+              i);
+          image = true;
+        }
       }
     }
     await Future.forEach<Reference>(allFiles, (file) async {

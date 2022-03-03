@@ -6,7 +6,7 @@ platform :android do
   begin
    firebase_app_distribution(
     groups: "userStudy",
-    release_notes: "big changes.",
+    release_notes: "Trial2.",
     apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
     firebase_cli_path: "/usr/local/bin/firebase",
     firebase_cli_token: "1//036Adl0djlqNZCgYIARAAGAMSNwF-L9IrznrUX7ctDd58iASnQ0G-CapNdroXgCYWr2LSjNLx_JJaoaalko3SFsHLC9Yqn63lzCg",

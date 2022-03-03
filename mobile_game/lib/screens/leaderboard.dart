@@ -68,14 +68,27 @@ class _LeaderState extends State<Leader> {
         return diff;
       });
     sortedMap = Map<String, int>.fromEntries(sort.reversed);
+    print(4);
+  }
+
+  printAlert(String message) {
+    showDialog(
+        context: context,
+        builder: (ctx) =>
+            AlertDialog(title: const Text("Error"), content: Text(message)));
   }
 
   Future<List<int>> topTenValues() async {
     await getSortedMap();
+    int counter = 0;
     nums = [];
     for (var e in sortedMap.values) {
-      nums.add(e);
+      if (counter < 10) {
+        nums.add(e);
+        counter++;
+      }
     }
+
     return nums;
   }
 
@@ -118,30 +131,29 @@ class _LeaderState extends State<Leader> {
                         builder: (context) => (_screens[currentIndex])));
               },
               items: const [
-          BottomNavigationBarItem(
-            label: "homepage",
-            icon: Icon(Icons.home),
-          ),
-          BottomNavigationBarItem(
-            label: "upload item",
-            icon: Icon(Icons.camera),
-          ),
-          BottomNavigationBarItem(
-            label: "guess location",
-            icon: Icon(Icons.burst_mode_outlined),
-          ),
-          BottomNavigationBarItem(
-            label: "view account",
-            icon: Icon(Icons.account_circle_outlined),
-          ),
-          BottomNavigationBarItem(
-            label: "leaderboard",
-            icon: Icon(Icons.leaderboard_outlined),
-          ),
-        ],
+                BottomNavigationBarItem(
+                  label: "homepage",
+                  icon: Icon(Icons.home),
+                ),
+                BottomNavigationBarItem(
+                  label: "upload item",
+                  icon: Icon(Icons.camera),
+                ),
+                BottomNavigationBarItem(
+                  label: "guess location",
+                  icon: Icon(Icons.burst_mode_outlined),
+                ),
+                BottomNavigationBarItem(
+                  label: "view account",
+                  icon: Icon(Icons.account_circle_outlined),
+                ),
+                BottomNavigationBarItem(
+                  label: "leaderboard",
+                  icon: Icon(Icons.leaderboard_outlined),
+                ),
+              ],
             ),
-            body: 
-          Padding(
+            body: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
@@ -156,13 +168,15 @@ class _LeaderState extends State<Leader> {
                               if (!snapshot.hasData) {
                                 return const Center(
                                     child: CircularProgressIndicator(
-                                      valueColor:AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 221, 198, 227))
-                                    ));
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Color.fromARGB(
+                                                    255, 221, 198, 227))));
                               } else {
                                 return Center(
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                        children: List.generate(
+                                    child: SingleChildScrollView(
+                                        child: Column(
+                                            children: List.generate(
                                   nums.length,
                                   (index) => Row(
                                     children: <Widget>[
@@ -174,8 +188,7 @@ class _LeaderState extends State<Leader> {
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           25)),
-                                              margin:
-                                                  const EdgeInsets.all(8.0),
+                                              margin: const EdgeInsets.all(8.0),
                                               borderOnForeground: true,
                                               elevation: 20.0,
                                               child: Row(
@@ -204,7 +217,9 @@ class _LeaderState extends State<Leader> {
                                                     borderOnForeground: false,
                                                     elevation: 0.0,
                                                     child: Text(
-                                                      sortedMap.keys.elementAt(index).toString(),
+                                                      sortedMap.keys
+                                                          .elementAt(index)
+                                                          .toString(),
                                                     ),
                                                   )
                                                 ],

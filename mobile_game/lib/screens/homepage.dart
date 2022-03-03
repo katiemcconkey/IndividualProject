@@ -86,8 +86,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   updateCounter() async {
-    // //get current time in database
-    // //get current time if it is the next day
     late DateTime x;
     late String last;
     DatabaseEvent event = await ref.once();
@@ -102,8 +100,6 @@ class _MyAppState extends State<MyApp> {
 
       String y = f.format(DateTime.now()).toString();
       DateTime current = DateTime.parse(y);
-      //print(x);
-      //print(current);
       if (current.isAfter(x)) {
         values.forEach((key, values) {
           if (values["uid"] == id) {
@@ -229,7 +225,7 @@ class _MyAppState extends State<MyApp> {
                                   child: Text(
                                     "You have " +
                                         x.toString() +
-                                        " images left to upload today",
+                                        " items left to upload today",
                                     style: const TextStyle(
                                         color: Color.fromARGB(255, 58, 3, 68),
                                         fontSize: 17,

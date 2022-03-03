@@ -64,17 +64,17 @@ class _GuessTextState extends State<GuessText> {
 
   updateUploadersPoints(int i, String guess) async {
     inputData();
-    DatabaseReference ref = FirebaseDatabase.instance.ref("data");
-    DatabaseEvent event = await ref.once();
+    DatabaseReference reff = FirebaseDatabase.instance.ref("data");
+    DatabaseEvent event = await reff.once();
     dynamic values = event.snapshot.value;
     DatabaseReference _ref = FirebaseDatabase.instance.ref("locationText");
     DatabaseEvent _event = await _ref.once();
     dynamic _values = _event.snapshot.value;
     values.forEach((key, values) {
       if (values["uid"] != id) {
-        _values.forEach((key, _values) {
+        int x = values["points"];
+        _values.forEach((k, v) {
           if (_values["uid"] == values["uid"] && _values["text"] == guess) {
-            int x = values["points"];
             ref.child(key).update({"points": x + i});
           }
         });
@@ -95,7 +95,7 @@ class _GuessTextState extends State<GuessText> {
     await getListOfWifis();
     data = [];
     for (var b in _wifiNetworks) {
-      if (b.level! > -80) {
+      if (b.level! > -75) {
         data.add(b.bssid.toString());
       }
     }
@@ -128,6 +128,8 @@ class _GuessTextState extends State<GuessText> {
         n = values["wifi"];
         n = n.replaceAll(' ', '');
         wifis = n.split(",");
+        wifis.remove(" ");
+        wifis.remove("");
         infos[j] = wifis;
       }
     });
@@ -166,19 +168,24 @@ class _GuessTextState extends State<GuessText> {
       if (key == guess) {
         size = value.length;
         for (var w in value) {
+          print(w);
           if (data.contains(w)) {
             k++;
           }
         }
       }
     });
-    if (size > 200) {
+
+    if (size > 400) {
+      x = 0.2;
+      y = 1.8;
+    } else if (size > 200 && size < 399) {
       x = 0.3;
       y = 1.7;
-    } else if (size < 199 && size > 150) {
+    } else if ((size < 199 && size > 150)) {
       x = 0.4;
       y = 1.6;
-    } else if (size < 149 && size > 100) {
+    } else if ((size < 149 && size > 100) || (size > 0 && size < 5)) {
       x = 0.5;
       y = 1.5;
     } else if (size < 99 && size > 50) {
@@ -212,19 +219,28 @@ class _GuessTextState extends State<GuessText> {
         printAlert("You have 2 tries left, you only matched " +
             k.toString() +
             " out of " +
-            size.toString());
+            size.toString() +
+            " and scanned " +
+            data.length.toString() +
+            " wifi networks");
       }
       if (points == 2) {
         printAlert("You have 1 try left, you only matched " +
             k.toString() +
             " out of " +
-            size.toString());
+            size.toString() +
+            " and scanned " +
+            data.length.toString() +
+            " wifi networks");
       }
       if (points >= 3) {
         printAlert("Out of tries, no points, you only matched " +
             k.toString() +
             " out of " +
-            size.toString());
+            size.toString() +
+            " and scanned " +
+            data.length.toString() +
+            " wifi networks");
         text = true;
       }
     }

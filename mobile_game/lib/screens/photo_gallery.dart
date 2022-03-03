@@ -81,20 +81,22 @@ class gallery_state extends State<Gallery> {
   }
 
   Future<List<Map<String, dynamic>>> _loadImages() async {
+    int counter = 0;
     await getAlreadyGuessed();
-    final ListResult result =
-        await storage.ref().list(const ListOptions(maxResults: 10));
+    final ListResult result = await storage.ref().list();
     final List<Reference> allFiles = result.items;
     await Future.forEach<Reference>(allFiles, (file) async {
       final String fileUrl = await file.getDownloadURL();
       final FullMetadata custom = await file.getMetadata();
 
       if (custom.customMetadata?['uid'] != id &&
-          !alreadyGuessed.contains(fileUrl)) {
+          !alreadyGuessed.contains(fileUrl) &&
+          counter < 10) {
         files.add({
           "url": fileUrl,
           "path": file.fullPath,
         });
+        counter++;
       }
     });
     return files;
@@ -123,27 +125,27 @@ class gallery_state extends State<Gallery> {
                     builder: (context) => (_screens[currentIndex])));
           },
           items: const [
-          BottomNavigationBarItem(
-            label: "homepage",
-            icon: Icon(Icons.home),
-          ),
-          BottomNavigationBarItem(
-            label: "upload item",
-            icon: Icon(Icons.camera),
-          ),
-          BottomNavigationBarItem(
-            label: "guess location",
-            icon: Icon(Icons.burst_mode_outlined),
-          ),
-          BottomNavigationBarItem(
-            label: "view account",
-            icon: Icon(Icons.account_circle_outlined),
-          ),
-          BottomNavigationBarItem(
-            label: "leaderboard",
-            icon: Icon(Icons.leaderboard_outlined),
-          ),
-        ],
+            BottomNavigationBarItem(
+              label: "homepage",
+              icon: Icon(Icons.home),
+            ),
+            BottomNavigationBarItem(
+              label: "upload item",
+              icon: Icon(Icons.camera),
+            ),
+            BottomNavigationBarItem(
+              label: "guess location",
+              icon: Icon(Icons.burst_mode_outlined),
+            ),
+            BottomNavigationBarItem(
+              label: "view account",
+              icon: Icon(Icons.account_circle_outlined),
+            ),
+            BottomNavigationBarItem(
+              label: "leaderboard",
+              icon: Icon(Icons.leaderboard_outlined),
+            ),
+          ],
         ),
         body: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -190,7 +192,8 @@ class gallery_state extends State<Gallery> {
                                                                   path: image[
                                                                       'path'],
                                                                   url: image[
-                                                                      'url'])))
+                                                                      'url']),
+                                                                    ))
                                                 },
                                             child: Image.network(
                                               image['url'],

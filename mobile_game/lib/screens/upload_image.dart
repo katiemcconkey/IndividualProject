@@ -67,14 +67,10 @@ class _camera_screenState extends State<Camera_Screen> {
   }
 
   wifis() async {
-    //print(_wifiNetworks.length);
     await getListOfWifis();
-    //print(_wifiNetworks.length);
     for (var b in _wifiNetworks) {
-      if (b.level! > -80 && !bssids.contains(b.bssid.toString())) {
-        //print(b.bssid.toString());
+      if (b.level! > -75 && !bssids.contains(b.bssid.toString())) {
         bssids.add(b.bssid.toString() + ",");
-        //(wifi + b.bssid.toString() + ",");
       }
     }
     wifi = bssids.join("");
@@ -107,15 +103,18 @@ class _camera_screenState extends State<Camera_Screen> {
     bssids = [];
     wifis();
     String y = f.format(DateTime.now()).toString();
-    XFile? image =
-        await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      imageFile = File(image!.path);
-      imgs.add(Image.file(imageFile));
-      files.add(image.path);
-      name = path.basename(image.path);
-    });
     if (wifi != "") {
+      XFile? image =
+          await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
+
+      setState(() {
+        imageFile = File(image!.path);
+        imgs.add(Image.file(imageFile));
+        files.add(image.path);
+        //name = "abc";
+        name = path.basename(image.path);
+      });
+
       final img = photo(name, wifi, id);
       pic.saveData(img);
 
@@ -136,14 +135,14 @@ class _camera_screenState extends State<Camera_Screen> {
 
   counterLimit() async {
     inputData();
-    //if counter > 9 then remove camera functionality
+    wifis();
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
     values.forEach((key, values) {
       if (values["uid"] == id) {
         int x = values["counter"];
-        if (x < 10) {
+        if (x < 10 && wifi != "") {
           _getCamera();
         } else {
           printAlert("You can only upload 10 items a day");
