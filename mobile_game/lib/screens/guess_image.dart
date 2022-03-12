@@ -153,7 +153,7 @@ class _ImageScreenState extends State<ImageScreen> {
           builder: (ctx) => AlertDialog(
               title: const Text("Location Check"),
               content:
-                  Text(message + ", You're probably in the wrong location")));
+                  Text(message + ", there was no detectable wifi")));
     } else {
       showDialog(
           context: context,
@@ -212,7 +212,7 @@ class _ImageScreenState extends State<ImageScreen> {
       x = 0.7;
       y = 1.3;
     }
-    if (i == 0) {
+    if (data.isEmpty) {
       printAlert("Please try somewhere else", i);
     } else {
       if (i > (size * x) && i < (size * y)) {

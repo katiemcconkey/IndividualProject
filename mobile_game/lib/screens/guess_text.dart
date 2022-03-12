@@ -195,53 +195,56 @@ class _GuessTextState extends State<GuessText> {
       x = 0.7;
       y = 1.3;
     }
-
-    if (k > (size * x) && k < (size * y)) {
-      if (points == 0) {
-        updatePoints(10);
-        updateUploadersPoints(8, guess);
-        printAlert("You got it first try, 10 points added");
-        text = true;
-      } else if (points == 1) {
-        updatePoints(5);
-        updateUploadersPoints(4, guess);
-        printAlert("Second try! 5 points added");
-        text = true;
-      } else if (points == 2) {
-        updatePoints(2);
-        updateUploadersPoints(2, guess);
-        printAlert("Third try! Well done");
-        text = true;
-      }
+    if (data.isEmpty) {
+      printAlert("Please try somewhere else");
     } else {
-      points += 1;
-      if (points == 1) {
-        printAlert("You have 2 tries left, you only matched " +
-            k.toString() +
-            " out of " +
-            size.toString() +
-            " and scanned " +
-            data.length.toString() +
-            " wifi networks");
-      }
-      if (points == 2) {
-        printAlert("You have 1 try left, you only matched " +
-            k.toString() +
-            " out of " +
-            size.toString() +
-            " and scanned " +
-            data.length.toString() +
-            " wifi networks");
-      }
-      if (points >= 3) {
-        printAlert("Out of tries, no points, you only matched " +
-            k.toString() +
-            " out of " +
-            size.toString() +
-            " and scanned " +
-            data.length.toString() +
-            " wifi networks");
-        text = true;
+      if (k > (size * x) && k < (size * y)) {
+        if (points == 0) {
+          updatePoints(10);
+          updateUploadersPoints(8, guess);
+          printAlert("You got it first try, 10 points added");
+          text = true;
+        } else if (points == 1) {
+          updatePoints(5);
+          updateUploadersPoints(4, guess);
+          printAlert("Second try! 5 points added");
+          text = true;
+        } else if (points == 2) {
+          updatePoints(2);
+          updateUploadersPoints(2, guess);
+          printAlert("Third try! Well done");
+          text = true;
+        }
+      } else {
+        points += 1;
+        if (points == 1) {
+          printAlert("You have 2 tries left, you only matched " +
+              k.toString() +
+              " out of " +
+              size.toString() +
+              " and scanned " +
+              data.length.toString() +
+              " wifi networks");
+        }
+        if (points == 2) {
+          printAlert("You have 1 try left, you only matched " +
+              k.toString() +
+              " out of " +
+              size.toString() +
+              " and scanned " +
+              data.length.toString() +
+              " wifi networks");
+        }
+        if (points >= 3) {
+          printAlert("Out of tries, no points, you only matched " +
+              k.toString() +
+              " out of " +
+              size.toString() +
+              " and scanned " +
+              data.length.toString() +
+              " wifi networks");
+          text = true;
+        }
       }
     }
 
