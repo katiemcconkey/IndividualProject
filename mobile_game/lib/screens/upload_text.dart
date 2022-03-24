@@ -111,7 +111,7 @@ class _TextScreenState extends State<TextScreen> {
         int x = values["counter"];
         if (x < 10) {
           if (wifi != "" && control.text != "") {
-            final img = LocationText(wifi, id, control.text);
+            final img = LocationText(wifi, id, control.text, 0);
             pic.savedata(img);
             try {
               updateCounter();

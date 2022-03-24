@@ -62,6 +62,18 @@ class _GuessTextState extends State<GuessText> {
     });
   }
 
+  guessedCorrect(String guess) async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref("locationText");
+    DatabaseEvent event = await ref.once();
+    dynamic values = event.snapshot.value;
+    values.forEach((key, values) {
+      if (values["text"] == guess) {
+        int x = values["guessedCorrectly"];
+        ref.child(key).update({"guessedCorrectly": x + 1});
+      }
+    });
+  }
+
   updateUploadersPoints(int i, String guess) async {
     inputData();
     DatabaseReference reff = FirebaseDatabase.instance.ref("data");
@@ -201,16 +213,19 @@ class _GuessTextState extends State<GuessText> {
       if (k > (size * x) && k < (size * y)) {
         if (points == 0) {
           updatePoints(10);
+          guessedCorrect(guess);
           updateUploadersPoints(8, guess);
           printAlert("You got it first try, 10 points added");
           text = true;
         } else if (points == 1) {
           updatePoints(5);
+          guessedCorrect(guess);
           updateUploadersPoints(4, guess);
           printAlert("Second try! 5 points added");
           text = true;
         } else if (points == 2) {
           updatePoints(2);
+          guessedCorrect(guess);
           updateUploadersPoints(2, guess);
           printAlert("Third try! Well done");
           text = true;

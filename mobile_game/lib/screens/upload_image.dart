@@ -115,7 +115,7 @@ class _camera_screenState extends State<Camera_Screen> {
         name = path.basename(image.path);
       });
 
-      final img = photo(name, wifi, id);
+      final img = photo(name, wifi, id, 0);
       pic.saveData(img);
 
       try {

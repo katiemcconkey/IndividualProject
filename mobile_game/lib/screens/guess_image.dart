@@ -121,6 +121,20 @@ class _ImageScreenState extends State<ImageScreen> {
     });
   }
 
+  guessedCorrect(String name) async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
+    DatabaseEvent event = await ref.once();
+    dynamic values = event.snapshot.value;
+    values.forEach((key, values) {
+      print(values["name"]);
+      print(name);
+      if (values["name"] == name) {
+        int x = values["guessedCorrectly"];
+        ref.child(key).update({"guessedCorrectly": x + 1});
+      }
+    });
+  }
+
   updateUploadersPoints(int i) async {
     inputData();
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
@@ -152,8 +166,7 @@ class _ImageScreenState extends State<ImageScreen> {
           context: context,
           builder: (ctx) => AlertDialog(
               title: const Text("Location Check"),
-              content:
-                  Text(message + ", there was no detectable wifi")));
+              content: Text(message + ", there was no detectable wifi")));
     } else {
       showDialog(
           context: context,
@@ -218,16 +231,19 @@ class _ImageScreenState extends State<ImageScreen> {
       if (i > (size * x) && i < (size * y)) {
         if (points == 0) {
           updatePoints(10);
+          guessedCorrect(name);
           updateUploadersPoints(8);
           printAlert("You got it first try, 10 points added", i);
           image = true;
         } else if (points == 1) {
           updatePoints(5);
+          guessedCorrect(name);
           updateUploadersPoints(4);
           printAlert("Second try! 5 points added", i);
           image = true;
         } else if (points == 2) {
           updatePoints(2);
+          guessedCorrect(name);
           updateUploadersPoints(2);
           printAlert("Third try! Well done", i);
           image = true;
