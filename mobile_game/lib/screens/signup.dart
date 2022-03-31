@@ -8,6 +8,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  //key to hold state of form
   final formkey = GlobalKey<FormState>();
   final auth = FirebaseAuth.instance;
   String email = '';
@@ -19,6 +20,8 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // app bar to display app name 
+      // as well as a back button to go back to the login page
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 221, 198, 227),
         elevation: 0,
@@ -64,15 +67,18 @@ class _SignUpState extends State<SignUp> {
                               child: 
                     TextFormField(keyboardType: TextInputType.emailAddress,
                     onChanged: (value){
+                      // set email variable to the inputted value
                       email=value.toString().trim();
                     },
                     validator: (value) {
                                   if (value!.isEmpty) {
+                                    // prompt user to input email if one is not inputted 
                                     return "Please enter your email address";
                                   }
                                 },
                     textAlign: TextAlign.center,
                     decoration: const InputDecoration(
+                      // show the word email in text box along with the email icon
                       hintText: "Email",
                       prefixIcon:  Icon(
                         Icons.email,
@@ -93,14 +99,17 @@ class _SignUpState extends State<SignUp> {
                       obscureText: true,
                       validator: (value){
                         if(value!.isEmpty){
+                          // prompt user to input password if one is not inputted
                           return"Please enter a password.";
                         }
                       },
                       onChanged: (value){
+                        // set password to the inputted value 
                         password = value;
                       },
                       textAlign: TextAlign.center,
                       decoration: const InputDecoration(
+                        // show the word password in text box along with icon of lock
                         hintText: "Password",
                         prefixIcon: Icon(
                           Icons.lock,
@@ -115,23 +124,26 @@ class _SignUpState extends State<SignUp> {
                               onPrimary: Colors.white),
                       child: const Text('Sign up'),
                       onPressed: () async {
+                        //validate form data 
                         if(formkey.currentState!.validate()){
                           setState(() {
                             loading = true;
                           });
                           try{
+                            // create a new user 
                             await auth.createUserWithEmailAndPassword(
                               email: email,
                               password: password
                             );
+                            // snackbar message to prompt user to sign in, now that they have been registered 
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(backgroundColor: Colors.indigo[300], 
-                              content: const Padding(
+                              const SnackBar(backgroundColor: Color.fromARGB(255, 221, 198, 227), 
+                              content: Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child:  Text('You have successfully signed up, you can now log in!'),
                                 
                                 ),
-                                duration: const Duration(seconds: 5),
+                                duration: Duration(seconds: 5),
                                 ),
 
                                 );
@@ -145,6 +157,7 @@ class _SignUpState extends State<SignUp> {
                                       builder: (ctx) => AlertDialog(
                                         title:
                                             const Text('Registration Failed'),
+                                            //prints error message if registration fails
                                         content: Text(e.message.toString()),
                                         actions: [
                                           TextButton(

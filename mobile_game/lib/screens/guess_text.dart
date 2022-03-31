@@ -17,6 +17,7 @@ class GuessText extends StatefulWidget {
 }
 
 class _GuessTextState extends State<GuessText> {
+  // list of screens for navigation bar 
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -30,31 +31,35 @@ class _GuessTextState extends State<GuessText> {
   String m = "";
   Map<String, List<String>> infos = {};
   String j = "";
-  List<WifiNetwork> _wifiNetworks = [];
+  List<WifiNetwork> _wifiNetworks = []; 
+  List<String> i = [];
+
+  
   String id = "";
   String n = "";
-  List<String> i = [];
   int points = 0;
   int c = 0;
   int k = 0;
-
   List<String> alreadyGuessed = [];
   String guessed = " ";
 
-  DatabaseReference ref = FirebaseDatabase.instance.ref("locationText");
 
+
+  DatabaseReference ref = FirebaseDatabase.instance.ref("locationText");
   final FirebaseAuth auth = FirebaseAuth.instance;
 
+// function to retrieve the current users UID
   void inputData() {
     id = auth.currentUser!.uid;
   }
-
+// function to update the pints 
   updatePoints(int i) async {
     inputData();
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
     values.forEach((key, values) {
+      // checks current uid matches the stored
       if (values["uid"] == id) {
         int x = values["points"];
         ref.child(key).update({"points": x + i});
@@ -62,6 +67,8 @@ class _GuessTextState extends State<GuessText> {
     });
   }
 
+  // function to increment field in database called guessedCorrectly
+  // this ensures there is an easy way to see the confirmed images
   guessedCorrect(String guess) async {
     DatabaseReference ref = FirebaseDatabase.instance.ref("locationText");
     DatabaseEvent event = await ref.once();
@@ -74,6 +81,7 @@ class _GuessTextState extends State<GuessText> {
     });
   }
 
+  //update points of original uploader
   updateUploadersPoints(int i, String guess) async {
     inputData();
     DatabaseReference reff = FirebaseDatabase.instance.ref("data");
@@ -83,9 +91,13 @@ class _GuessTextState extends State<GuessText> {
     DatabaseEvent _event = await _ref.once();
     dynamic _values = _event.snapshot.value;
     values.forEach((key, values) {
+      // checks the the current uid and the stored ae different 
       if (values["uid"] != id) {
         int x = values["points"];
         _values.forEach((k, v) {
+          // checks both uid in different objects of database are the same
+          // and that the text is correct
+          // updates points
           if (_values["uid"] == values["uid"] && _values["text"] == guess) {
             ref.child(key).update({"points": x + i});
           }
@@ -94,6 +106,7 @@ class _GuessTextState extends State<GuessText> {
     });
   }
 
+  //function which scans for nearby wifi and stores in list 
   getListOfWifis() async {
     try {
       _wifiNetworks = await WiFiForIoTPlugin.loadWifiList();
@@ -103,9 +116,14 @@ class _GuessTextState extends State<GuessText> {
     return Future.value(_wifiNetworks);
   }
 
+  // function to filter available wifi networks
   wificheck() async {
+    // get the nearby wifi scan 
+    // uses await to ensure nothing occurs until that is done
     await getListOfWifis();
     data = [];
+    // gets the signal strength of each wifi network
+    // and only inlcude if its bigger than -75
     for (var b in _wifiNetworks) {
       if (b.level! > -75) {
         data.add(b.bssid.toString());
@@ -113,6 +131,7 @@ class _GuessTextState extends State<GuessText> {
     }
   }
 
+  // method to print dialog boxes 
   printAlert(String message) {
     showDialog(
         context: context,
@@ -120,6 +139,7 @@ class _GuessTextState extends State<GuessText> {
             title: const Text("Location Check"), content: Text(message)));
   }
 
+  // future to print out text
   Future<dynamic> _getText() async {
     inputData();
     wifis = [];
@@ -130,13 +150,16 @@ class _GuessTextState extends State<GuessText> {
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
     values.forEach((key, values) {
+      // get all text from database
       if (values["uid"] != id) {
         j = values["text"];
+        // replace whitespace
         nospace = j.replaceAll(" ", "");
-
+        //check it has not been previously guessed
         if (!alreadyGuessed.contains(nospace)) {
           i.add(values["text"]);
         }
+        // create a map where the key is the text and the value is the wifi
         n = values["wifi"];
         n = n.replaceAll(' ', '');
         wifis = n.split(",");
@@ -148,7 +171,7 @@ class _GuessTextState extends State<GuessText> {
 
     return i;
   }
-
+  //function to download the already guessed text from the database
   getAlreadyGuessed() async {
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     inputData();
@@ -166,7 +189,9 @@ class _GuessTextState extends State<GuessText> {
     });
   }
 
+  // function to compared stored wifi and the wifi scan just taken
   checkWifi(String guess) async {
+    // call required functions
     await wificheck();
     await _getText();
     double x = 0;
@@ -176,18 +201,21 @@ class _GuessTextState extends State<GuessText> {
     int size = 0;
 
     bool text = false;
+     // goes through the stored wifi list
+    // if a network in that list appears in 
+    // the subsequent scan then add 1 to counter
     infos.forEach((key, value) {
       if (key == guess) {
         size = value.length;
         for (var w in value) {
-          print(w);
           if (data.contains(w)) {
             k++;
           }
         }
       }
     });
-
+    //depending on the size of the original scan there are different
+    //limits for guessing correctly 
     if (size > 400) {
       x = 0.2;
       y = 1.8;
@@ -207,9 +235,13 @@ class _GuessTextState extends State<GuessText> {
       x = 0.7;
       y = 1.3;
     }
+    // if there are no wifi networks currently available 
+    // dialog pops up to try elsewhere 
     if (data.isEmpty) {
       printAlert("Please try somewhere else");
     } else {
+      // checks the subsequent scan is meeting the limit
+      // adding points depending on the guess number 
       if (k > (size * x) && k < (size * y)) {
         if (points == 0) {
           updatePoints(10);
@@ -231,6 +263,8 @@ class _GuessTextState extends State<GuessText> {
           text = true;
         }
       } else {
+                // dialog boxes to show users how many tries they have 
+
         points += 1;
         if (points == 1) {
           printAlert("You have 2 tries left, you only matched " +
@@ -262,12 +296,14 @@ class _GuessTextState extends State<GuessText> {
         }
       }
     }
-
+    
+    //checks that the text is not in already guessed
     if (text == true) {
       if (!alreadyGuessed.contains(guess)) {
         test = true;
       }
     }
+    // add to already guessed and push to database
     if (test == true) {
       DatabaseReference ref = FirebaseDatabase.instance.ref("data");
       DatabaseEvent event = await ref.once();
@@ -283,6 +319,7 @@ class _GuessTextState extends State<GuessText> {
           }
         }
       });
+      // reset screen 
       setState(() {
         points = 0;
         test = false;
@@ -297,11 +334,13 @@ class _GuessTextState extends State<GuessText> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+          // top app bar shows app name
             appBar: AppBar(
               backgroundColor: const Color.fromARGB(255, 203, 162, 211),
               title: const Text('Eye Spy 2.0'),
               centerTitle: true,
             ),
+            // nav bar fixed to bottom to move around the app
             bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
@@ -310,12 +349,14 @@ class _GuessTextState extends State<GuessText> {
               unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
               iconSize: 30,
               currentIndex: 0,
+              // on tap changed to specified screen
               onTap: (currentIndex) {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => (_screens[currentIndex])));
               },
+              // list containing name of screens and associated icons
               items: const [
                 BottomNavigationBarItem(
                   label: "homepage",
@@ -345,10 +386,12 @@ class _GuessTextState extends State<GuessText> {
               ),
               Expanded(
                   child: FutureBuilder(
+                    // get the list of text
                       future: _getText(),
                       builder: (context, AsyncSnapshot<dynamic> snapshot) {
                         if (!snapshot.hasData) {
                           return const Center(
+                            // while waiting show circular progress indicator
                               child: CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                       Color.fromARGB(255, 221, 198, 227))));
@@ -389,9 +432,11 @@ class _GuessTextState extends State<GuessText> {
                                                                           .circular(
                                                                               25.0))),
                                                           onPressed: () {
+                                                            // perform wifi check
                                                             checkWifi(i[index]);
                                                           },
                                                           child: Text(
+                                                            // prints the text in a button 
                                                             i[index],
                                                             style: const TextStyle(
                                                                 fontSize: 15,

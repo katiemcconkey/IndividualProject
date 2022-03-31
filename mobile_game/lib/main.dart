@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_game/screens/homepage.dart';
 import 'package:mobile_game/screens/signup.dart';
 
+//This is the first page that is loaded for the app
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -18,6 +19,7 @@ class FirstPage extends StatelessWidget {
   const FirstPage({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
+  // specifies the homepage using Login()
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -35,6 +37,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   //key to hold state of form
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  //creates instance for authorisation
   final _auth = FirebaseAuth.instance;
   String email = '';
   String password = '';
@@ -43,6 +46,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // show a circular progress indicator while loading
       body: isloading
           ? const Center(
               child: CircularProgressIndicator(
@@ -77,11 +81,14 @@ class _LoginState extends State<Login> {
                             child: Card(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25)),
+                                  // creates field for email address to be added 
                               child: TextFormField(
                                 keyboardType: TextInputType.emailAddress,
+                                // gets the users inputted email address
                                 onChanged: (value) {
                                   email = value;
                                 },
+                                // if the value is empty, prompt user to enter email
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return "Please enter your email address";
@@ -106,13 +113,16 @@ class _LoginState extends State<Login> {
                               child: Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(25)),
+                                      // creates text field for password
                                   child: TextFormField(
                                     obscureText: true,
+                                    // if empty prompt user to enter password
                                     validator: (value) {
                                       if (value!.isEmpty) {
                                         return "Please enter your password";
                                       }
                                     },
+                                    // get the value that the user has inputter
                                     onChanged: (value) {
                                       password = value;
                                     },
@@ -131,13 +141,16 @@ class _LoginState extends State<Login> {
                                 onPrimary: Colors.white),
                             child: const Text('Log in'),
                             onPressed: () async {
+                              //validate form data
                               if (formkey.currentState!.validate()) {
                                 setState(() {
                                   isloading = true;
                                 });
                                 try {
+                                  // uses firebase authorisation to sign user in
                                   await _auth.signInWithEmailAndPassword(
                                       email: email, password: password);
+                                      // is successfully signed in, open homepage of app
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -151,6 +164,7 @@ class _LoginState extends State<Login> {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => AlertDialog(
+                                      // print error if log in fails
                                       title: const Text("Login Failed"),
                                       content: Text(e.message.toString()),
                                       actions: [
@@ -172,6 +186,7 @@ class _LoginState extends State<Login> {
                               }
                             },
                           ),
+                          // code to take you to the sign up page if the user does not have an account
                           const SizedBox(height: 10),
                           Row(
                             children: [

@@ -1,9 +1,14 @@
 // ignore_for_file: camel_case_types
-
+// class for the photo property of the realtime database
+// hold information about the uploaded photos
 class photo {
+  // stores name of image
   String name;
+  // stores string containing all WiFi networks
   String wifi;
+  // stores current users uid
   String uid;
+  // stores the amount of time this image has been confirmed
   int guessedCorrectly;
 
   photo(

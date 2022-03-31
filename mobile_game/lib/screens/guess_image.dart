@@ -9,6 +9,8 @@ import 'package:wifi_iot/wifi_iot.dart';
 import '../database/dao.dart';
 
 class ImageScreen extends StatefulWidget {
+  // this screen is only accessed when a user selects an image 
+  // therefore the image path and url are required parameters
   final String path;
   final String url;
   const ImageScreen({Key? key, required this.path, required this.url})
@@ -23,39 +25,49 @@ class _ImageScreenState extends State<ImageScreen> {
   String path;
   String url;
   _ImageScreenState(this.path, this.url);
+    final pic = Dao();
+
+  // variable to keep track of points
   int points = 0;
-  final pic = Dao();
+  // variable which holds the amount of overlap between 2 sans
   int i = 0;
+  
+  // list of wifinetworks
+  static List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
+  // holds string of wifi bssids
   List<String> wifis = [];
+  // holds string of wifi bssids
   late List<String> data = [];
-  final db = FirebaseDatabase.instance;
-  FirebaseStorage storage = FirebaseStorage.instance;
-  late dynamic query;
-  late dynamic query2;
+   // map holding image name and list of wifis downloaded
+  Map<String, List<String>> infos = {};
   late String k = "";
   late String m = "";
-  static List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
-  late List<String> wifi = [];
-  late List<String> names = [];
-  var info = {};
-  late String id;
+  
+  
+  // list of maps to hold downloaded images
   List<Map<String, dynamic>> files = [];
   late bool image = false;
   bool test = false;
-  Map<String, List<String>> infos = {};
-  DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
-
-  final DatabaseReference _ref = FirebaseDatabase.instance.ref("data");
-
+ 
+  // variable to hold users uid 
+  late String id;
+  // variable to add image url to already guessed field in database
   late String guessed = '';
+  // variable to hold downloaded list of already guessed image url
   late List<String> alreadyGuessed = [];
 
+  // creates instance of real time database, autentication and storage
+  DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
+  final DatabaseReference _ref = FirebaseDatabase.instance.ref("data");
   final FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseStorage storage = FirebaseStorage.instance;
 
+  // function to retrieve the current users UID
   void inputData() {
     id = auth.currentUser!.uid;
   }
 
+  // function which scans for nearby wifi and stores in list
   getListOfWifis() async {
     try {
       _wifiNetworks = await WiFiForIoTPlugin.loadWifiList();
@@ -65,25 +77,33 @@ class _ImageScreenState extends State<ImageScreen> {
     return Future.value(_wifiNetworks);
   }
 
+  // get the stored wifi scan and name of image
   check() async {
     wifis = [];
     m = '';
     infos = {};
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
+    // loop through database 
     values.forEach((key, values) {
+      // get the stored name value and wifi value
       k = values["name"];
       m = values["wifi"];
+      // removes whitespace and splits at commas
       m = m.replaceAll(' ', '');
       wifis = m.split(",");
       wifis.remove(" ");
       wifis.remove("");
+      // ads name as key and wifi scan as value in map
       infos[k] = wifis;
     });
   }
 
+  // function to get the list of images that have already been guessed so they 
+  // do not show up more than once
   getAlreadyGuessed() async {
     inputData();
+    // reset the values to be empty
     alreadyGuessed = [];
     guessed = " ";
     DatabaseEvent event = await _ref.once();
@@ -92,15 +112,21 @@ class _ImageScreenState extends State<ImageScreen> {
       if (values['uid'] == id) {
         guessed = values['alreadyGuessed'];
       }
-
+      // remove whitespaces
+      // split string into a list at every comma
       guessed = guessed.replaceAll(' ', '');
       alreadyGuessed = guessed.split(",");
     });
   }
 
+  // function to filter available wifi networks
   wificheck() async {
+    // get the nearby wifi scan 
+    // uses await to ensure nothing occurs until that is done
     await getListOfWifis();
     data = [];
+    // gets the signal strength of each wifi network
+    // and only inlcude if its bigger than -75
     for (var b in _wifiNetworks) {
       if (b.level! > -75) {
         data.add(b.bssid.toString());
@@ -108,11 +134,14 @@ class _ImageScreenState extends State<ImageScreen> {
     }
   }
 
+  // function to update points if guessed correctly
   updatePoints(int i) async {
     inputData();
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
+    // loops through database for where the uids match and update points using
+    // number in parameter
     values.forEach((key, values) {
       if (values["uid"] == id) {
         int x = values["points"];
@@ -121,13 +150,14 @@ class _ImageScreenState extends State<ImageScreen> {
     });
   }
 
+  // Function to incremenet field in database called guessedCorrectly
+  // this ensures there is an easy way to see the confirmed images 
   guessedCorrect(String name) async {
+    // when an image is correctly guessed this field increments by 1
     DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
     values.forEach((key, values) {
-      print(values["name"]);
-      print(name);
       if (values["name"] == name) {
         int x = values["guessedCorrectly"];
         ref.child(key).update({"guessedCorrectly": x + 1});
@@ -135,20 +165,21 @@ class _ImageScreenState extends State<ImageScreen> {
     });
   }
 
+  // function to update the points of the original uploader
   updateUploadersPoints(int i) async {
     inputData();
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
-    dynamic values = event.snapshot.value;
-    DatabaseReference _ref = FirebaseDatabase.instance.ref("photo");
-    DatabaseEvent _event = await ref.once();
     dynamic _values = event.snapshot.value;
     final ListResult result = await storage.ref().list();
     final List<Reference> allFiles = result.items;
     await Future.forEach<Reference>(allFiles, (file) async {
       final FullMetadata custom = await file.getMetadata();
       _values.forEach((key, values) {
+        // if the uid is the same as that stored in metadata 
+        // update points using number specified in parameter 
         values.forEach((key, values) {
+          // check if the current use UID is the same as the stored metadata uid 
           if (values["uid"] == custom.customMetadata?['uid']) {
             if (path == _values['name']) {
               int x = values["points"];
@@ -160,33 +191,31 @@ class _ImageScreenState extends State<ImageScreen> {
     });
   }
 
+  // function to create alert dialog box 
   printAlert(String message, int i) {
-    if (i == 0) {
-      showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-              title: const Text("Location Check"),
-              content: Text(message + ", there was no detectable wifi")));
-    } else {
       showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
               title: const Text("Location Check"), content: Text(message)));
-    }
   }
 
+  // function to take user back to the gallery of images 
   backToGallery() {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => const Gallery()));
   }
 
+  // function to compare the stored wifi and the wifi scan just taken 
   checkWifi(String name) async {
+    // variables to holf the limits for wifi overlap
     double x = 0;
     double y = 0;
+    // calls all required functions
     await getAlreadyGuessed();
     inputData();
     await check();
     await wificheck();
+
     final ListResult result = await storage.ref().list();
     final List<Reference> allFiles = result.items;
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
@@ -195,6 +224,9 @@ class _ImageScreenState extends State<ImageScreen> {
     i = 0;
     int size = 0;
     late FullMetadata custom;
+    // goes through the stored wifi list
+    // if a network in that list appears in 
+    // the subsequent scan then add 1 to counter
     infos.forEach((key, value) {
       if (key == name) {
         size = value.length;
@@ -206,6 +238,9 @@ class _ImageScreenState extends State<ImageScreen> {
       }
     });
 
+
+    //depending on the size of the original scan there are different
+    //limits for guessing correctly 
     if (size > 400) {
       x = 0.2;
       y = 1.8;
@@ -225,9 +260,13 @@ class _ImageScreenState extends State<ImageScreen> {
       x = 0.7;
       y = 1.3;
     }
+    // if there are no wifi networks currently available 
+    // dialog pops up to try elsewhere 
     if (data.isEmpty) {
       printAlert("Please try somewhere else", i);
     } else {
+      // checks the subsequent scan is meeting the limit
+      // adding points depending on the guess number 
       if (i > (size * x) && i < (size * y)) {
         if (points == 0) {
           updatePoints(10);
@@ -249,6 +288,7 @@ class _ImageScreenState extends State<ImageScreen> {
           image = true;
         }
       } else {
+        // dialog boxes to show users how many tries they have 
         points += 1;
         if (points == 1) {
           printAlert(
@@ -286,6 +326,7 @@ class _ImageScreenState extends State<ImageScreen> {
         }
       }
     }
+    //loop through images and check if the url is already in the guessed urls
     await Future.forEach<Reference>(allFiles, (file) async {
       custom = await file.getMetadata();
       if (custom.customMetadata?['uid'] != id) {
@@ -296,6 +337,8 @@ class _ImageScreenState extends State<ImageScreen> {
         }
       }
     });
+    // if the url is not in the guessed urls
+    // code to add url to the list of guessed images 
     if (test == true) {
       values.forEach((key, values) {
         if (values['uid'] == id) {
@@ -303,11 +346,13 @@ class _ImageScreenState extends State<ImageScreen> {
             alreadyGuessed.add(url + ",");
           }
           guessed = alreadyGuessed.join(",");
+          // update value oin database
           if (values["uid"] == id) {
             ref.child(key).update({"alreadyGuessed": guessed});
           }
         }
       });
+      // resets points and sends user back to gallery 
       points = 0;
       image = false;
       backToGallery();
@@ -315,6 +360,7 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   @override
+  //code to display 1 image and 2 buttons, that when clicked call functions made above 
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -324,7 +370,6 @@ class _ImageScreenState extends State<ImageScreen> {
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          //crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Card(
               margin: const EdgeInsets.all(10.0),
@@ -332,6 +377,7 @@ class _ImageScreenState extends State<ImageScreen> {
               elevation: 0.0,
               child: Padding(
                   padding: const EdgeInsets.all(8.0),
+                  // shows image on screen
                   child: Image.network(
                     url,
                     scale: 3.0,
@@ -349,6 +395,7 @@ class _ImageScreenState extends State<ImageScreen> {
                           primary: const Color.fromARGB(255, 58, 3, 68),
                           onPrimary: Colors.white),
                       onPressed: () {
+                        // if button pressed perform a wifi scan
                         checkWifi(path);
                       },
                       child: const Text("Check location"),
@@ -365,6 +412,7 @@ class _ImageScreenState extends State<ImageScreen> {
                           primary: const Color.fromARGB(255, 58, 3, 68),
                           onPrimary: Colors.white),
                       onPressed: () {
+                        // if button pressed go back to galleyr
                         backToGallery();
                       },
                       child: const Text("Back to gallery"),

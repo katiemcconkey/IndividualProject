@@ -15,6 +15,8 @@ class GuessScreen extends StatefulWidget {
 }
 
 class _GuessScreenState extends State<GuessScreen> {
+    //list of screens for the navigation bar 
+  // this enables the new screen to be displayed when an icon is pressed
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -27,12 +29,15 @@ class _GuessScreenState extends State<GuessScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+          //app bar at top of screen which displays apps name
             appBar: AppBar(
               backgroundColor: const Color.fromARGB(255, 203, 162, 211),
               title: const Text('Eye Spy 2.0'),
               centerTitle: true,
             ),
+            //bottom nav bar for navigating the app
             bottomNavigationBar: BottomNavigationBar(
+              // fixed to bottom of screen
               type: BottomNavigationBarType.fixed,
               selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
               selectedFontSize: 8,
@@ -40,12 +45,14 @@ class _GuessScreenState extends State<GuessScreen> {
               unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
               iconSize: 30,
               currentIndex: 0,
+              // when tapped change screen
               onTap: (currentIndex) {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => (_screens[currentIndex])));
               },
+              // list of items in the nav bar and their corresponding icon
               items: const [
           BottomNavigationBarItem(
             label: "homepage",
@@ -69,6 +76,7 @@ class _GuessScreenState extends State<GuessScreen> {
           ),
         ],
             ),
+            // body displays 2 buttons
             body: Center(child: Column(
               children : [
                    const SizedBox(height: 200),
@@ -80,6 +88,7 @@ class _GuessScreenState extends State<GuessScreen> {
                                     child: const Text(
                                         "Upload an image"),
                                     onPressed: () => {
+                                      // takes you to the camera screen to upload an image
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -101,6 +110,7 @@ class _GuessScreenState extends State<GuessScreen> {
                                     child: const Text(
                                         "Upload text"),
                                     onPressed: () => {
+                                      // takes you to the screen with text box to upload text tags
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(

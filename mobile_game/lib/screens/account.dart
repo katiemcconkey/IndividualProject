@@ -6,6 +6,7 @@ import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'homepage.dart';
 
+// this is the screen for the users account
 class Account extends StatefulWidget {
   const Account({Key? key}) : super(key: key);
 
@@ -19,7 +20,7 @@ class _AccountState extends State<Account> {
   late String username;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
-
+  // list of screens for the navigation bar
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -28,10 +29,13 @@ class _AccountState extends State<Account> {
     Leader()
   ];
 
+  // function to get the current users email address
   void inputData() {
     email = auth.currentUser!.email.toString();
   }
 
+  // creates a username by removing the second half of the email
+  // i.e. test@test.com -> test 
   String getUsername() {
     inputData();
     emails = email.split("@");
@@ -39,8 +43,8 @@ class _AccountState extends State<Account> {
     return username;
   }
 
+  // function to sign user out of their account and take them back to the main screen
   Future signout() async {
-    //FirebaseAuth _auth = FirebaseAuth.instance;
     await auth.signOut().then((value) => Navigator.of(context)
         .pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const FirstPage()),
@@ -52,12 +56,15 @@ class _AccountState extends State<Account> {
     getUsername();
     return MaterialApp(
         home: Scaffold(
+      // top of screen showing the name of app
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 203, 162, 211),
         title: const Text('Eye Spy 2.0'),
         centerTitle: true,
       ),
+      // bottom nav bar which allows for navigating between screens
       bottomNavigationBar: BottomNavigationBar(
+        // fixed nav bar to bottom of screen
         type: BottomNavigationBarType.fixed,
         selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
         selectedFontSize: 8,
@@ -65,12 +72,14 @@ class _AccountState extends State<Account> {
         unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
         iconSize: 30,
         currentIndex: 0,
+        // when an icon is tapped it shows that screen
         onTap: (currentIndex) {
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => (_screens[currentIndex])));
         },
+        // list of all items on the nav bar and corresponding icons
         items: const [
           BottomNavigationBarItem(
             label: "homepage",
@@ -94,6 +103,7 @@ class _AccountState extends State<Account> {
           ),
         ],
       ),
+      // displays text and sign out button
       body: Column(
         children: [
       Column(
@@ -121,6 +131,7 @@ class _AccountState extends State<Account> {
                 onPrimary: Colors.white),
             child: const Text("Sign out"),
             onPressed: () {
+              //calls method to sign a user out when pressed
               signout();
             },
           )

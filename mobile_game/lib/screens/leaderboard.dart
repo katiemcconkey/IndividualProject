@@ -4,28 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:mobile_game/screens/account.dart';
 import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/upload.dart';
-
 import 'homepage.dart';
 
 class Leader extends StatefulWidget {
   const Leader({Key? key}) : super(key: key);
-
   @override
   _LeaderState createState() => _LeaderState();
 }
 
 class _LeaderState extends State<Leader> {
+  // create maps to store information for leaderboard
   Map<String, int> sortedMap = {};
   Map<String, int> infos = {};
   DatabaseReference ref = FirebaseDatabase.instance.ref("data");
   final FirebaseAuth auth = FirebaseAuth.instance;
+
   late String k;
   late int m;
   List<int> nums = [];
   int index = 0;
+
   late String id;
   late List<String> emails;
   late String username;
+
+  // list of screens for navigation
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -35,22 +38,26 @@ class _LeaderState extends State<Leader> {
   ];
   late String rank;
 
+  // get current users UID
   void inputData() {
     id = auth.currentUser!.uid;
   }
 
+  // create a username by removing second half of email
   String getUsername(String email) {
     emails = email.split("@");
     username = emails[0];
     return username;
   }
 
+  // function to sort the points in a map in descending order
   getSortedMap() async {
     infos = {};
     int diff;
     inputData();
     DatabaseEvent event = await ref.once();
     dynamic values = event.snapshot.value;
+    // get points and username and put into a map 
     if (values != null) {
       values.forEach((key, values) {
         m = values["points"];
@@ -59,6 +66,8 @@ class _LeaderState extends State<Leader> {
       });
     }
 
+    // sort the map just created by comparing values, unless values are the same and 
+    // then compare keys alphabetically
     var sort = infos.entries.toList()
       ..sort((x, y) {
         diff = x.value.compareTo(y.value);
@@ -67,8 +76,9 @@ class _LeaderState extends State<Leader> {
         }
         return diff;
       });
+
+    // reverse the sorted map
     sortedMap = Map<String, int>.fromEntries(sort.reversed);
-    print(4);
   }
 
   printAlert(String message) {
@@ -78,10 +88,13 @@ class _LeaderState extends State<Leader> {
             AlertDialog(title: const Text("Error"), content: Text(message)));
   }
 
+  // returns top ten values of the sorted map
   Future<List<int>> topTenValues() async {
+    // call function to get sorted map
     await getSortedMap();
     int counter = 0;
     nums = [];
+    // add points to a list if they are in top ten
     for (var e in sortedMap.values) {
       if (counter < 10) {
         nums.add(e);
@@ -92,6 +105,7 @@ class _LeaderState extends State<Leader> {
     return nums;
   }
 
+  // function to return index plus its appropriate superscript
   String place(int index) {
     int x = (index + 1);
     if (x == 1) {
@@ -111,11 +125,13 @@ class _LeaderState extends State<Leader> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+          // app bar showing app name
             appBar: AppBar(
               backgroundColor: const Color.fromARGB(255, 203, 162, 211),
               title: const Text('Eye Spy 2.0'),
               centerTitle: true,
             ),
+            // fixed bottom nav bar for moving between screens
             bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
@@ -124,6 +140,7 @@ class _LeaderState extends State<Leader> {
               unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
               iconSize: 30,
               currentIndex: 0,
+              // on tap change screens
               onTap: (currentIndex) {
                 Navigator.push(
                     context,
@@ -162,11 +179,13 @@ class _LeaderState extends State<Leader> {
                     ),
                     Expanded(
                         child: FutureBuilder(
+                          // get list of top ten values
                             future: topTenValues(),
                             builder:
                                 (context, AsyncSnapshot<List<int>> snapshot) {
                               if (!snapshot.hasData) {
                                 return const Center(
+                                  // show circular progress indicator while waiting
                                     child: CircularProgressIndicator(
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
@@ -174,6 +193,8 @@ class _LeaderState extends State<Leader> {
                                                     255, 221, 198, 227))));
                               } else {
                                 return Center(
+                                  // prints out many cards, each card is a position on the leaderboard.
+                                  // first place is one big card with 3 mini cards inside to display the correct numbers
                                     child: SingleChildScrollView(
                                         child: Column(
                                             children: List.generate(

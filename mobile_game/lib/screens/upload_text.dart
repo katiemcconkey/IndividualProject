@@ -8,7 +8,6 @@ import 'package:mobile_game/screens/choose.dart';
 import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'package:wifi_iot/wifi_iot.dart';
-
 import '../database/dao.dart';
 import 'account.dart';
 
@@ -20,9 +19,12 @@ class TextScreen extends StatefulWidget {
 }
 
 class _TextScreenState extends State<TextScreen> {
+  // allows for textboxes for writing
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final control = TextEditingController();
   final pic = Dao();
+
+  //list of screens for navigation
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -31,50 +33,48 @@ class _TextScreenState extends State<TextScreen> {
     Leader()
   ];
   DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
+
+
   late String id;
-  late List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
   int i = 0;
   int counter = 0;
-  late String data;
+
+  late List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
   late List<String> bssids = [];
+  late String data;
+  
   late String wifi = "";
   late String hint = "";
   late List<String> inputs = [];
 
+//get current users UID
   final FirebaseAuth auth = FirebaseAuth.instance;
   void inputData() {
     id = auth.currentUser!.uid;
   }
 
+  // function to get the list of all nearby wifis 
   getListOfWifis() async {
-    //_wifiNetworks = <WifiNetwork>[];
     try {
       _wifiNetworks = await WiFiForIoTPlugin.loadWifiList();
     } on PlatformException {
       _wifiNetworks = <WifiNetwork>[];
     }
-    //return Future.value(_wifiNetworks);
   }
 
+  //function to take all nearby wifi and filter by signal strength
   wifis() async {
-    //print(_wifiNetworks.length);
     await getListOfWifis();
-    //print(_wifiNetworks.length);
     bssids = [];
     for (var b in _wifiNetworks) {
       if (b.level! > -75 && !bssids.contains(b.bssid.toString())) {
-        //print(b.bssid.toString());
         bssids.add(b.bssid.toString() + ",");
-        //(wifi + b.bssid.toString() + ",");
       }
     }
     wifi = bssids.join("");
-    //print("in wifis method");
-    //print(wifi);
-    //print(wifi.length);
-    //return wifi;
   }
 
+  //function to print dialog alerts
   printAlert(String message) {
     showDialog(
         context: context,
@@ -82,6 +82,7 @@ class _TextScreenState extends State<TextScreen> {
             AlertDialog(title: const Text("Error"), content: Text(message)));
   }
 
+  //function to increment counter by 1 everytime text is uploaded
   updateCounter() async {
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
@@ -100,6 +101,7 @@ class _TextScreenState extends State<TextScreen> {
     super.dispose();
   }
 
+  // check counter is less than 10 and if so take text and upload it
   counterLimit() async {
     inputData();
     wifis();
@@ -110,8 +112,10 @@ class _TextScreenState extends State<TextScreen> {
       if (values["uid"] == id) {
         int x = values["counter"];
         if (x < 10) {
+          // dont let empty strings be uploaded
           if (wifi != "" && control.text != "") {
             final img = LocationText(wifi, id, control.text, 0);
+            //send image
             pic.savedata(img);
             try {
               updateCounter();
@@ -136,11 +140,13 @@ class _TextScreenState extends State<TextScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+          // top app bar 
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 203, 162, 211),
         title: const Text('Eye Spy 2.0'),
         centerTitle: true,
       ),
+      // fixed bottom nav bar 
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
@@ -149,6 +155,7 @@ class _TextScreenState extends State<TextScreen> {
         unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
         iconSize: 30,
         currentIndex: 0,
+        // on tap change screen
         onTap: (currentIndex) {
           Navigator.push(
               context,
@@ -207,18 +214,23 @@ class _TextScreenState extends State<TextScreen> {
                         child: Card(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25)),
+                                // get text form field for typing
                             child: TextFormField(
                               controller: control,
+                              // normal key board
                               keyboardType: TextInputType.text,
                               validator: (value) {
                                 if (value!.isEmpty) {
+                                  // if field is empty
                                   return "Please enter your a hint for your location";
                                 } else {
+                                  // set inputted value to hint
                                   hint = value;
                                 }
                               },
                               textAlign: TextAlign.center,
                               decoration: const InputDecoration(
+                                // text box shows small bit of text
                                   hintText: 'Where are you?',
                                   prefixIcon: Icon(
                                     Icons.question_answer_rounded,
@@ -231,6 +243,7 @@ class _TextScreenState extends State<TextScreen> {
               ),
             )
           ])),
+          //floating action button to upload code
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       floatingActionButton: FloatingActionButton(
@@ -240,6 +253,7 @@ class _TextScreenState extends State<TextScreen> {
             color: Color.fromARGB(255, 58, 3, 68),
           ),
           onPressed: () async {
+            // on pressed upload code
             counterLimit();
           }),
     ));

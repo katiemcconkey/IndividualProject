@@ -1,5 +1,4 @@
 // ignore_for_file: camel_case_types
-
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -28,19 +27,25 @@ class Camera_Screen extends StatefulWidget {
 class _camera_screenState extends State<Camera_Screen> {
   final pic = Dao();
   final ImagePicker _picker = ImagePicker();
-  FirebaseStorage storage = FirebaseStorage.instance;
   late File imageFile;
   late List<Image> imgs = [];
   late String name;
-  late List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
+
+  FirebaseStorage storage = FirebaseStorage.instance;
   final db = FirebaseDatabase.instance;
+  
+  late List<WifiNetwork> _wifiNetworks = <WifiNetwork>[];
   late String wifi = "";
+  late String data;
+  late List<String> bssids = [];
+
   late String id;
   int i = 0;
   int counter = 0;
-  late String data;
-  late List<String> bssids = [];
+ 
   var f = DateFormat("yyyyMMdd");
+
+  // list of screens for navigation
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -51,21 +56,22 @@ class _camera_screenState extends State<Camera_Screen> {
 
   List<String> files = [];
 
+  // get current users uid
   final FirebaseAuth auth = FirebaseAuth.instance;
   void inputData() {
     id = auth.currentUser!.uid;
   }
 
+  // function to get the list of all nearby wifis
   getListOfWifis() async {
-    //_wifiNetworks = <WifiNetwork>[];
     try {
       _wifiNetworks = await WiFiForIoTPlugin.loadWifiList();
     } on PlatformException {
       _wifiNetworks = <WifiNetwork>[];
     }
-    //return Future.value(_wifiNetworks);
   }
 
+  // function to take in list of all nearby wifi and filter by signal strength
   wifis() async {
     await getListOfWifis();
     for (var b in _wifiNetworks) {
@@ -74,12 +80,9 @@ class _camera_screenState extends State<Camera_Screen> {
       }
     }
     wifi = bssids.join("");
-    //print("in wifis method");
-    //print(wifi);
-    //print(wifi.length);
-    //return wifi;
   }
 
+  // function to print dialog alerts
   printAlert(String message) {
     showDialog(
         context: context,
@@ -87,6 +90,7 @@ class _camera_screenState extends State<Camera_Screen> {
             AlertDialog(title: const Text("Error"), content: Text(message)));
   }
 
+  //function to increment counter by 1 everytime an image is uploaded
   updateCounter() async {
     DatabaseReference ref = FirebaseDatabase.instance.ref("data");
     DatabaseEvent event = await ref.once();
@@ -99,28 +103,33 @@ class _camera_screenState extends State<Camera_Screen> {
     });
   }
 
+  //function to get camera functionality
   _getCamera() async {
     bssids = [];
     wifis();
     String y = f.format(DateTime.now()).toString();
     if (wifi != "") {
+      // specifies camers source
       XFile? image =
           await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
 
       setState(() {
+        // get image names etc and adds to a list
         imageFile = File(image!.path);
         imgs.add(Image.file(imageFile));
         files.add(image.path);
-        //name = "abc";
         name = path.basename(image.path);
       });
 
+      // save to realtime database
       final img = photo(name, wifi, id, 0);
       pic.saveData(img);
 
       try {
         updateCounter();
+        // push file to storage 
         await storage.ref(name).putFile(imageFile,
+        // with current users uid
             SettableMetadata(customMetadata: {'uid': id, 'time': y}));
         setState(() {});
       } on FirebaseException catch (error) {
@@ -129,10 +138,12 @@ class _camera_screenState extends State<Camera_Screen> {
       }
       i++;
     } else {
+      // if there is no wifi do not allow an upload
       printAlert("There is no detectable wifi near you");
     }
   }
 
+  //function to get camera functionality if counter limit has not been reached
   counterLimit() async {
     inputData();
     wifis();
@@ -214,6 +225,7 @@ class _camera_screenState extends State<Camera_Screen> {
             SizedBox(
               height: 400,
               width: 350,
+              //prints images just taken
               child: ListView.builder(
                 itemCount: imgs.length,
                 itemBuilder: (context, i) => Column(children: [
@@ -227,6 +239,7 @@ class _camera_screenState extends State<Camera_Screen> {
           ],
         ),
       ),
+      // button that when pressed either opens camera or prints error
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       floatingActionButton: FloatingActionButton(

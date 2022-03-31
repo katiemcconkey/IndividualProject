@@ -15,6 +15,8 @@ class ChooseScreen extends StatefulWidget {
 }
 
 class _ChooseScreenState extends State<ChooseScreen> {
+  //list of screens for the navigation bar 
+  // this enables the new screen to be displayed when an icon is pressed
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -27,12 +29,15 @@ class _ChooseScreenState extends State<ChooseScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+          // app bar to show name of the app
             appBar: AppBar(
               backgroundColor: const Color.fromARGB(255, 203, 162, 211),
               title: const Text('Eye Spy 2.0'),
               centerTitle: true,
             ),
+          // bottom nav bar to navigate between screens  
             bottomNavigationBar: BottomNavigationBar(
+              // fixes nav bar to bottom of screen
               type: BottomNavigationBarType.fixed,
               selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
               selectedFontSize: 8,
@@ -40,12 +45,14 @@ class _ChooseScreenState extends State<ChooseScreen> {
               unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
               iconSize: 30,
               currentIndex: 0,
+              // when a icon is tapped it will open that screen
               onTap: (currentIndex) {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => (_screens[currentIndex])));
               },
+              // list of items in nav bar and their correspondidng icon
               items: const [
                 BottomNavigationBarItem(
                   label: "homepage",
@@ -69,6 +76,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
                 ),
               ],
             ),
+            // displays 2 buttons to take a user to guess an image or text tag
             body: Center(
               child: Column(children: [
                 const SizedBox(height: 200),
@@ -79,6 +87,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
                     child: ElevatedButton(
                       child: const Text("Guess an image"),
                       onPressed: () => {
+                        // if button pressed go to the image gallery
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -98,6 +107,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
                     child: ElevatedButton(
                       child: const Text("Guess text"),
                       onPressed: () => {
+                        // if button pressed go to the text gallery
                         Navigator.push(
                             context,
                             MaterialPageRoute(

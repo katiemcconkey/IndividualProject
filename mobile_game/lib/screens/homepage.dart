@@ -17,18 +17,25 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  final db = FirebaseDatabase.instance; 
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  
   int counter = 0;
   int points = 0;
   final pic = Dao();
-  final db = FirebaseDatabase.instance;
+
   late String email;
   late String id;
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  
   late String k;
   late int count;
   late int x = 0;
   String alreadyGuessed = '';
+
+
+  // list of screens for navigation bar
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -37,9 +44,12 @@ class _MyAppState extends State<MyApp> {
     Leader()
   ];
 
+
   late DateTime checkTime;
+  // format date to be in form year, month, day
   var f = DateFormat("yyyyMMdd");
 
+  // function to get current users email and uid
   void data() {
     if (auth.currentUser!.email != null) {
       email = auth.currentUser!.email.toString();
@@ -50,7 +60,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   DatabaseReference ref = FirebaseDatabase.instance.ref("data");
+  // function to add a user to the database if they are not already there
   void check() async {
+    // formats current time to a string
     String x = f.format(DateTime.now()).toString();
 
     List ids = [];
@@ -85,6 +97,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  // function to update counter if it is the first time a user is interacting with the app
   updateCounter() async {
     late DateTime x;
     late String last;
@@ -93,13 +106,17 @@ class _MyAppState extends State<MyApp> {
     if (values != null) {
       values.forEach((key, values) {
         if (values["uid"] == id) {
+          // get the current stored date
           last = values["time"];
+          // convert to datetime
           x = DateTime.parse(last);
         }
       });
-
+      // get the current time in datetime and string format
       String y = f.format(DateTime.now()).toString();
       DateTime current = DateTime.parse(y);
+
+      // check if current is after stored and if it is rest counter to 0
       if (current.isAfter(x)) {
         values.forEach((key, values) {
           if (values["uid"] == id) {
@@ -110,7 +127,7 @@ class _MyAppState extends State<MyApp> {
       }
     }
   }
-
+  // function to get the current users counter
   Future<int> getCounter() async {
     x = 0;
     DatabaseEvent event = await ref.once();
@@ -121,9 +138,11 @@ class _MyAppState extends State<MyApp> {
         x = 10 - count;
       }
     });
+    // returns the amount
     return x;
   }
 
+  // main screen showing instructions on how to play, a map image and how many items you have left to upload 
   @override
   Widget build(BuildContext context) {
     data();
@@ -131,12 +150,15 @@ class _MyAppState extends State<MyApp> {
     updateCounter();
     return MaterialApp(
         home: Scaffold(
+          // top app bar showing app name
             appBar: AppBar(
               backgroundColor: const Color.fromARGB(255, 203, 162, 211),
               title: const Text('Eye Spy 2.0'),
               centerTitle: true,
             ),
+            // nav bar to move between screens
             bottomNavigationBar: BottomNavigationBar(
+              // fixed to bottom of the screen
               type: BottomNavigationBarType.fixed,
               selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
               selectedFontSize: 8,
@@ -144,12 +166,14 @@ class _MyAppState extends State<MyApp> {
               unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
               iconSize: 30,
               currentIndex: 0,
+              //on tap change screen
               onTap: (currentIndex) {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => (_screens[currentIndex])));
               },
+              // list of screen name and associated icons
               items: const [
           BottomNavigationBarItem(
             label: "homepage",
@@ -173,6 +197,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ],
             ),
+            //body showing instructions and images
             body: Center(
                 child: Column(children: [
               const Padding(padding: EdgeInsets.all(10.0)),
@@ -185,6 +210,7 @@ class _MyAppState extends State<MyApp> {
               ),
               Expanded(
                   child: FutureBuilder(
+                    // uses a future so that the body does not load until the counter is ready
                       future: getCounter(),
                       builder: (context, AsyncSnapshot<int> snapshot) {
                         if (!snapshot.hasData) {
@@ -199,7 +225,6 @@ class _MyAppState extends State<MyApp> {
                                   margin: EdgeInsets.all(10.0),
                                   borderOnForeground: false,
                                   elevation: 0.0,
-                                  //color: Color.fromARGB(255, 203, 162, 211),
                                   child: Text(
                                     "Take and receive up to 10 items per day. When you receive a new item, go and find where you think this was taken and allow the app to check if you're in the correct location. You recieve points for guessing the correct location as well as others guessing your item's location correctly.",
                                     style: TextStyle(

@@ -1,7 +1,6 @@
 // ignore_for_file: camel_case_types
 
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import 'package:mobile_game/screens/upload.dart';
 import 'package:mobile_game/screens/leaderboard.dart';
 import 'homepage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:intl/intl.dart';
 import 'guess_image.dart';
 
 class Gallery extends StatefulWidget {
@@ -23,6 +21,9 @@ class Gallery extends StatefulWidget {
 }
 
 class gallery_state extends State<Gallery> {
+
+  //list of screens for the navigation bar 
+  // this enables the new screen to be displayed when an icon is pressed
   final List _screens = const [
     MyApp(),
     GuessScreen(),
@@ -30,25 +31,30 @@ class gallery_state extends State<Gallery> {
     Account(),
     Leader()
   ];
+  // variable to hold user uid
+  late String id; 
 
+  // instances of realtime database, storage and authentication
   final db = FirebaseDatabase.instance;
   FirebaseStorage storage = FirebaseStorage.instance;
-  late String id;
-  List<Map<String, dynamic>> files = [];
-  var f = DateFormat("yyyyMMdd");
-  bool update = false;
-
-  Map<String, List<String>> infos = {};
   DatabaseReference ref = FirebaseDatabase.instance.ref("photos");
   final DatabaseReference _ref = FirebaseDatabase.instance.ref("data");
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
+  //list of map for images
+  List<Map<String, dynamic>> files = [];
+  // map to hold downloaded wifi information from database
+  Map<String, List<String>> infos = {};
+
+  bool update = false;
+
+  //variables to check for images that have already been guessed
   late String guessed = '';
   late List<String> alreadyGuessed = [];
   late String guesses = "";
-  late List<String> urls = [];
 
-  final FirebaseAuth auth = FirebaseAuth.instance;
-
+  
+  // function to get the current users uid 
   void inputData() {
     id = auth.currentUser!.uid;
   }
@@ -58,19 +64,23 @@ class gallery_state extends State<Gallery> {
     super.initState();
   }
 
+  // function to produce a list of all image urls that have already been attempted
   getAlreadyGuessed() async {
     inputData();
     alreadyGuessed = [];
     guessed = "";
     DatabaseEvent event = await _ref.once();
     dynamic values = event.snapshot.value;
+    // loops through all values in the database
     values.forEach((key, values) {
       if (values['uid'] == id) {
+        //gets the string of already guessed images
         guessed = values['alreadyGuessed'];
       }
-
+      // remove whitespace
       guessed = guessed.replaceAll(' ', '');
       if (guessed != '') {
+        // split into a list at commas
         alreadyGuessed = guessed.split(",");
       } else {
         alreadyGuessed = [];
@@ -80,18 +90,27 @@ class gallery_state extends State<Gallery> {
     return alreadyGuessed;
   }
 
+  // Function to load 10 images and store them in a map
   Future<List<Map<String, dynamic>>> _loadImages() async {
+    // counter to keep track of images 
     int counter = 0;
+    // get list of already urls
     await getAlreadyGuessed();
     final ListResult result = await storage.ref().list();
     final List<Reference> allFiles = result.items;
+    // loops through all files in storage
     await Future.forEach<Reference>(allFiles, (file) async {
+      // get the download url
       final String fileUrl = await file.getDownloadURL();
+      // get the customisable metadata
       final FullMetadata custom = await file.getMetadata();
-
+      // ensure uid is not the same as the current uid
+      // and check the url has not been already guessed
+      // and check counter has not reached 10
       if (custom.customMetadata?['uid'] != id &&
           !alreadyGuessed.contains(fileUrl) &&
           counter < 10) {
+            // add tolist of maps with url and path
         files.add({
           "url": fileUrl,
           "path": file.fullPath,
@@ -102,15 +121,20 @@ class gallery_state extends State<Gallery> {
     return files;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // app bar to show the name of the app
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 203, 162, 211),
           title: const Text('Eye Spy 2.0'),
           centerTitle: true,
         ),
+        // nav bar to switch easily between screens
         bottomNavigationBar: BottomNavigationBar(
+          // fixed to bottom
           type: BottomNavigationBarType.fixed,
           selectedItemColor: const Color.fromARGB(255, 203, 162, 211),
           selectedFontSize: 8,
@@ -118,12 +142,14 @@ class gallery_state extends State<Gallery> {
           unselectedItemColor: const Color.fromARGB(255, 203, 162, 211),
           iconSize: 30,
           currentIndex: 0,
+          // when tapped change screen 
           onTap: (currentIndex) {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => (_screens[currentIndex])));
           },
+          // list of items in nav bar and their correspondidng icon
           items: const [
             BottomNavigationBarItem(
               label: "homepage",
@@ -147,6 +173,7 @@ class gallery_state extends State<Gallery> {
             ),
           ],
         ),
+        // body loads a carousel of images 
         body: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -156,6 +183,7 @@ class gallery_state extends State<Gallery> {
                 ),
                 Expanded(
                     child: FutureBuilder(
+                      // loads images
                         future: _loadImages(),
                         builder: (context,
                             AsyncSnapshot<List<Map<String, dynamic>>>
@@ -182,6 +210,7 @@ class gallery_state extends State<Gallery> {
                                               fontWeight: FontWeight.bold),
                                         )),
                                     SizedBox(
+                                      // when an image is pressed go to a different screen and display that image alone
                                         child: GestureDetector(
                                             onTap: () => {
                                                   Navigator.push(
@@ -202,6 +231,7 @@ class gallery_state extends State<Gallery> {
                                   ]);
                                 });
                           }
+                          // displays a circular progress indicator until images have loaded
                           return const Center(
                             child: CircularProgressIndicator(
                                 valueColor: AlwaysStoppedAnimation<Color>(

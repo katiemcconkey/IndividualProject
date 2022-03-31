@@ -1,7 +1,7 @@
 # Timelog
 
 * Eye Spy 2.0
-* Katie McConkey
+* Kathryn McConkey
 * 2366393m
 * Matthew Chalmers
 
@@ -21,13 +21,16 @@
 ### 1 Oct 2021
 * *5 hours* researching toolkits and downloading and setting up flutter and emulator
 
-## Week 2 (4.5)
+## Week 2 (5.5)
 ### 6 Oct 2021
 
 * *0.5 hour* meeting with supervisor
 * *4 hours* following flutter tutorials
+  
+### 8 Oct 2021
+* *1 hours* creating user stories 
 
-## Week 3 (10)
+## Week 3 (11)
 
 ### 13 Oct 2021
 * *0.5 hour* meeting with supervisor 
@@ -36,6 +39,7 @@
 
 ### 16 Oct 2021
 * *3 hours* implementing wifi_network_plus package to get wifi name and BSSID etc
+* *1 hour* creating storyboards
 ## Week 4 (10)
 
 ### 20 Oct 2021 
@@ -81,19 +85,20 @@
 * *3 hours* researching databases
 
 ### 13 Nov 2021
-* *2 hours* 
-* *1 hours* 
-## Week 8 (2)
+* *1 hour* Installing SQL for use in Visual Studio
+* *2 hours* Following SQL tutorial
+
+## Week 8 (3.5)
 
 ### 17 Nov 2021 
 * *0.5 hour* meeting with supervisor 
+* *2 hours* researching whether a sign in page is required 
 
-## Week 9 (1)
-
-### 22 NOV 2021
+## Week 9 (0)
+* Had many assignments due and was unable to complete much work this week
 ## Week 10(0.5)
 ### 23 Nov 2021 
-* *0.5 hours* testing app to see if wifi package was still working
+* *0.5 hours* adding pages for all extra screens needed 
 
 
 ## Week 11 (26.5)
@@ -117,7 +122,7 @@
 * *2 hours* adding functionality to retreive and view images from firebase storage
 
 
-## Week 12 (23)
+## Week 12 (24)
  ### 13 Dec 2021
  * *4 hours* adding basic firebase realtime database to store image name from storage
  * *2 hours* testing wifi scan as results were very inconsistent
@@ -135,7 +140,7 @@
 
 ### 17 Dec 2021 
 * *0.5 hour* meeting with supervisor 
-
+* *1 hour* writing status report
 ## Week 13 (11)
 
 ### 10 Jan 2022 
@@ -151,31 +156,67 @@
 * *1 hour*  trying to fix error
 
 ## Week 14 (0.5)
-* had covid this week so did not make progress
+* I had covid this week so did not make progress
 ### 18 Jan 2022 
 * *0.5 hour* meeting with supervisor
 
-## Week 15 (14) 
+## Week 15 (13.5) 
 
 ### 24 Jan 2022
+* *1 hour* resarching error of 
+* *3 hours* implementing sign in and sign up functionality using firebase 
+* *2 hours* adding a new section to database to store information about each user such as points and email
 
+### 28 Jan 2022
+* *2 hours* implementing a points system
+* *0.5 hours* testing the points to ensure they work correctly
+* *1 hour* fixing points as they were not working correctly
+* *1 hour* reseaching tables and leaderboard in flutter 
+
+### 29 Jan 2022
+* *1 hour* trying to implement a table in flutter
+* *1 hour* trying to fix table as it was showing 10 times instead of creating 10 rows 
+* *1 hour* hard coding values into leaderboard to see how it would look and then fixing previous error 
 ## Week 16 (10)
-
-### 31 Feb 2022
+### 31 Jan 2022 
+* *2 hours* changing layout of leaderboard to be cards instead of table
+* *1 hour* fixing error where a name shows twice if the points are the same 
 ### 4 feb 2022
 * *0.5 hour* meeting with supervisor 
+* *0.5 hour* adding counter to database to create a limit on uploads
+* *3 hours* researching a way to have the counter reset at midnight
 
-## Week 17 (15)
+### 5 feb 2022
+* *2 hours* trying to use the time a user last interacted with the server 
+* *1 hour* adding a datetime field to database to keep track
+
+## Week 17 (11)
 
 ### 7 Feb 2022
-
+* *2 hours* researching why firebase doesnt allows datetime field in database
 ### 11 Feb 2022
 * *0.5 hour* meeting with supervisor 
-  
+* *2 hours* researching parsing date time field
+* *1 hour* parsing date time field 
+* *0.5 hours* creating my own way to store datetime (remove time)
+* *1 hour* adding comparison to reset counter 
 
+### 12 Feb 2022
+* *2 hours* adding a feature to create a username to show in leaderboard and on account page 
+* *2 hours* adding navigation bar at bottom of screens
 ## Week 18 (15)
+
+### 14 Feb 2022
+* *2 hours* implementing feature to add images to an already guessed field so they do not appear more than once 
+* *2 hour* fixing errors trying to implement this as it was adding them multiple times 
 ### 18 Feb 2022
 * *0.5 hour* meeting with supervisor
+* *5 hours* changing full layout of app including adding more screens
+* *3 hours* cleaning up code by adding it to the correct location and changing names 
+* *0.5 hours* adding guessed correctly field to database to easily create a dataset of images that have been guessed
+  
+### 19 feb 
+* *2 hours* planning user trials, collecting participants and getting surveys etc. ready 
 
 ## Week 19 (15)
 
